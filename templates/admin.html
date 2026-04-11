@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理员后台 - 书法课报名签到系统</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <style>
+        #add-course-panel { display: none; }
+        #add-course-panel.active { display: block; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">书法课报名签到系统</div>
+            <div class="nav">
+                <a href="{{ url_for('index') }}">首页</a>
+                <a href="{{ url_for('courses') }}">课程列表</a>
+                <a href="{{ url_for('user_center') }}">用户中心</a>
+                <a href="{{ url_for('messages') }}">消息中心</a>
+                <a href="{{ url_for('admin') }}">管理员后台</a>
+            </div>
+            <div class="user-info">
+                <span>{{ session['name'] }}</span>
+                <a href="{{ url_for('logout') }}">注销</a>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <h1>管理员后台</h1>
+        
+        <div class="admin-nav" style="display: flex; gap: 15px; margin-bottom: 30px; padding: 20px; background-color: #f8f5f0; border-radius: 10px;">
+            <a href="{{ url_for('admin') }}"><button class="btn-secondary">课程管理</button></a>
+            <a href="{{ url_for('hours_management') }}"><button class="btn-success">课时管理</button></a>
+        </div>
+        
+        <!-- 添加课程 -->
+        <div class="collapsible">
+            <div class="collapsible-header">
+                <h3>添加课程</h3>
+                <button class="collapse-btn"></button>
+            </div>
+            <div class="collapsible-content" id="add-course-panel">
+                <div class="form-container">
+                    <form method="post" action="{{ url_for('add_course') }}">
+                        <div class="form-group">
+                            <label for="name">课程名称</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="description">课程描述</label>
+                            <textarea id="description" name="description" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="total_hours">总课时</label>
+                            <input type="number" id="total_hours" name="total_hours" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="price">价格</label>
+                            <input type="number" id="price" name="price" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="start_time">开始时间</label>
+                            <input type="datetime-local" id="start_time" name="start_time" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="end_time">结束时间</label>
+                            <input type="datetime-local" id="end_time" name="end_time" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="max_students">最大人数</label>
+                            <input type="number" id="max_students" name="max_students" required>
+                        </div>
+                        <button type="submit">添加课程</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 课程列表 -->
+        <div class="section">
+            <h2>课程列表</h2>
+            <div class="list-container">
+                {% for course in courses %}
+                <div class="list-item">
+                    <div class="list-item-header">
+                        <div class="list-item-title">{{ course['name'] }}</div>
+                        <div class="list-item-actions">
+                            <a href="{{ url_for('admin_course', course_id=course['id']) }}"><button class="btn-secondary">查看详情</button></a>
+                            <a href="{{ url_for('attendance', course_id=course['id']) }}"><button class="btn-success">签到</button></a>
+                            <button class="btn-danger">删除</button>
+                        </div>
+                    </div>
+                    <div class="list-item-content">
+                        <p>{{ course['description'] }}</p>
+                        <p>总课时：{{ course['total_hours'] }}小时 | 价格：{{ course['price'] }}元</p>
+                        <p>开始时间：{{ course['start_time'] }} | 结束时间：{{ course['end_time'] }}</p>
+                        <p>人数：{{ course['current_students'] }}/{{ course['max_students'] }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

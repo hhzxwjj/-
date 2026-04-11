@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课时管理 - 书法课报名签到系统</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">书法课报名签到系统</div>
+            <div class="nav">
+                <a href="{{ url_for('index') }}">首页</a>
+                <a href="{{ url_for('courses') }}">课程列表</a>
+                <a href="{{ url_for('user_center') }}">用户中心</a>
+                <a href="{{ url_for('messages') }}">消息中心</a>
+                <a href="{{ url_for('admin') }}">管理员后台</a>
+            </div>
+            <div class="user-info">
+                <span>{{ session['name'] }}</span>
+                <a href="{{ url_for('logout') }}">注销</a>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <h1>课时管理</h1>
+        
+        {% for course in courses %}
+        <div class="form-container" style="margin-bottom: 40px;">
+            <h2>{{ course['name'] }} - 课时情况</h2>
+            <div class="course-info" style="margin-bottom: 20px;">
+                <div class="course-info-item"><strong>开始时间：</strong>{{ course['start_time'] }}</div>
+                <div class="course-info-item"><strong>结束时间：</strong>{{ course['end_time'] }}</div>
+                <div class="course-info-item"><strong>总课时：</strong>{{ course['total_hours'] }}小时</div>
+            </div>
+            
+            <table class="student-list">
+                <thead>
+                    <tr>
+                        <th>学生姓名</th>
+                        <th>家长姓名</th>
+                        <th>手机号码</th>
+                        <th>已上课时</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in course_students.get(course['id'], []) %}
+                    <tr {% if student['below_average'] %}style="background-color: #FFF3CD;"{% endif %}>
+                        <td style="font-weight: bold;">{{ student['child_name'] }}</td>
+                        <td>{{ student['name'] }}</td>
+                        <td>{{ student['phone'] }}</td>
+                        <td>{{ student['attendance_count'] }}</td>
+                        <td>
+                            {% if student['below_average'] %}
+                            <span class="status-pending">缺少课时 {{ student['hours_gap'] }} 节</span>
+                            {% else %}
+                            <span class="status-paid">正常</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if student['below_average'] %}
+                            <button class="btn-success" onclick="tempAdjust({{ student['enrollment_id'] }})"><span style="color: #FFD700;">临时调课</span></button>
+                            {% else %}
+                            <span style="color: #999;">无需调课</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endfor %}
+        
+        <div class="action-buttons" style="margin-top: 30px; display: flex; gap: 15px;">
+            <a href="{{ url_for('admin') }}"><button class="btn-secondary">返回</button></a>
+        </div>
+        
+        <div id="message" class="message" style="display: none;"></div>
+    </div>
+    
+    <!-- 临时调课模态框 -->
+    <div id="temp-adjust-modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5);">
+        <div style="background-color: #fdfbf8; margin: 15% auto; padding: 30px; border: 1px solid #e6d7c3; width: 80%; max-width: 500px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.2);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="color: #8B0000; margin: 0;">临时调课</h2>
+                <span onclick="document.getElementById('temp-adjust-modal').style.display='none'" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+            </div>
+            <form id="temp-adjust-form">
+                <input type="hidden" id="temp-enrollment-id" name="enrollment_id">
+                <div class="form-group">
+                    <label for="temp-course-id">选择临时课程</label>
+                    <select id="temp-course-id" name="course_id" required style="width: 100%; padding: 12px; border: 2px solid #e6d7c3; border-radius: 8px;">
+                        <option value="">请选择课程</option>
+                        {% for course in courses %}
+                        <option value="{{ course['id'] }}">{{ course['name'] }} ({{ course['start_time'] }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group" style="margin-top: 15px;">
+                    <label for="temp-class-date">上课日期</label>
+                    <input type="date" id="temp-class-date" name="class_date" required style="width: 100%; padding: 12px; border: 2px solid #e6d7c3; border-radius: 8px;">
+                </div>
+                <div style="text-align: center; margin-top: 30px; display: flex; gap: 15px; justify-content: center;">
+                    <button type="submit" style="padding: 12px 24px; background-color: #8B0000; color: #FFD700; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600;">确认调课</button>
+                    <button type="button" onclick="document.getElementById('temp-adjust-modal').style.display='none'" style="padding: 12px 24px; background-color: #6B8E23; color: #FFD700; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600;">取消</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        // 显示临时调课模态框
+        function tempAdjust(enrollmentId) {
+            document.getElementById('temp-enrollment-id').value = enrollmentId;
+            document.getElementById('temp-adjust-modal').style.display = 'block';
+        }
+        
+        // 处理临时调课表单提交
+        document.getElementById('temp-adjust-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const enrollmentId = document.getElementById('temp-enrollment-id').value;
+            const courseId = document.getElementById('temp-course-id').value;
+            const classDate = document.getElementById('temp-class-date').value;
+            
+            if (!courseId || !classDate) {
+                showMessage('请选择课程和日期', 'error');
+                return;
+            }
+            
+            // 发送请求进行临时调课
+            fetch('/temp_adjust', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    enrollment_id: enrollmentId,
+                    course_id: courseId,
+                    class_date: classDate
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                showMessage(data.message, data.success ? 'success' : 'error');
+                if (data.success) {
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                }
+                // 关闭模态框
+                document.getElementById('temp-adjust-modal').style.display = 'none';
+            })
+            .catch(error => {
+                showMessage('临时调课失败，请重试', 'error');
+                // 关闭模态框
+                document.getElementById('temp-adjust-modal').style.display = 'none';
+            });
+        });
+        
+        // 显示消息
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

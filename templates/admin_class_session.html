@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>班次详情 - 书法课报名签到系统</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">书法课报名签到系统</div>
+            <div class="nav">
+                <a href="{{ url_for('index') }}">首页</a>
+                <a href="{{ url_for('courses') }}">课程列表</a>
+                <a href="{{ url_for('user_center') }}">用户中心</a>
+                <a href="{{ url_for('messages') }}">消息中心</a>
+                <a href="{{ url_for('admin') }}">管理员后台</a>
+            </div>
+            <div class="user-info">
+                <span>{{ session['name'] }}</span>
+                <a href="{{ url_for('logout') }}">注销</a>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <h1>课程详情</h1>
+        
+        <!-- 课程信息 -->
+        <div class="form-container">
+            <h2>课程信息</h2>
+            <div class="course-info">
+                <div class="course-info-item"><strong>课程名称：</strong>{{ class_session['name'] }}</div>
+                <div class="course-info-item"><strong>总课时：</strong>{{ class_session['total_hours'] }}小时</div>
+                <div class="course-info-item"><strong>价格：</strong>{{ class_session['price'] }}元</div>
+                <div class="course-info-item"><strong>开始时间：</strong>{{ class_session['start_time'] }}</div>
+                <div class="course-info-item"><strong>结束时间：</strong>{{ class_session['end_time'] }}</div>
+                <div class="course-info-item"><strong>人数：</strong>{{ class_session['current_students'] }}/{{ class_session['max_students'] }}</div>
+            </div>
+            <div class="course-description">
+                <strong>课程描述：</strong>{{ class_session['description'] }}
+            </div>
+        </div>
+        
+        <!-- 人员调整 -->
+        <div class="form-container" id="move-student-section">
+            <h2>人员调整</h2>
+            <form id="move-student-form">
+                <div class="form-group">
+                    <label for="student_id">选择学生</label>
+                    <div style="position: relative;">
+                        <input type="text" id="student_input" placeholder="输入学生姓名或用户名" style="width: 100%; padding: 14px 16px; border: 2px solid #e6d7c3; border-radius: 8px; font-size: 15px;" onkeyup="filterStudents()">
+                        <div id="student_dropdown" style="position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #e6d7c3; border-radius: 0 0 8px 8px; max-height: 200px; overflow-y: auto; display: none; z-index: 1000;"></div>
+                        <input type="hidden" id="student_id" name="student_id" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="target_course_id">目标课程</label>
+                    <select id="target_course_id" name="target_course_id" required>
+                        <option value="">请选择目标课程</option>
+                        {% for course in all_courses %}
+                        {% if course['id'] != class_session['id'] %}
+                        <option value="{{ course['id'] }}">{{ course['name'] }} ({{ course['start_time'] }}) ({{ course['current_students'] }}/{{ course['max_students'] }})</option>
+                        {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn-success">调整到目标课程</button>
+            </form>
+        </div>
+        
+        <!-- 报名学生 -->
+        <div class="students">
+            <h2>报名学生</h2>
+            <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                <button type="button" class="btn-success" onclick="addStudent()">添加学生</button>
+                <a href="{{ url_for('attendance', course_id=class_session['id']) }}"><button class="btn-success">签到</button></a>
+                <a href="{{ url_for('admin') }}"><button class="btn-secondary">返回</button></a>
+            </div>
+            <table class="student-list">
+                <thead>
+                    <tr>
+                        <th>学生姓名</th>
+                        <th>家长姓名</th>
+                        <th>手机号码</th>
+                        <th>报名状态</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr>
+                        <td style="font-weight: bold;">{{ student['child_name'] }}</td>
+                        <td>{{ student['name'] }}</td>
+                        <td>{{ student['phone'] }}</td>
+                        <td>
+                            {% if student['status'] == 'pending' %}
+                            <span class="status-pending">待缴费</span>
+                            {% elif student['status'] == 'paid' %}
+                            <span class="status-paid">已缴费</span>
+                            {% else %}
+                            <span class="status-completed">已完成</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <button class="btn-danger" data-enrollment-id="{{ student['enrollment_id'] }}"><span style="color: #FFD700;">移除</span></button>
+                            <button class="btn-secondary" style="margin-left: 10px;" onclick="adjustStudent({{ student['id'] }})"><span style="color: #FFD700;">调整</span></button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+
+        
+        <div id="message" class="message" style="display: none;"></div>
+    </div>
+    <script>
+        // 调整学生到其他课程
+        document.getElementById('move-student-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const studentId = document.getElementById('student_id').value;
+            const targetCourseId = document.getElementById('target_course_id').value;
+            const currentCourseId = {{ class_session['id'] }};
+            
+            if (!studentId || !targetCourseId) {
+                showMessage('请选择学生和目标课程', 'error');
+                return;
+            }
+            
+            fetch('/move_student', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    student_id: studentId,
+                    current_course_id: currentCourseId,
+                    target_course_id: targetCourseId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                showMessage(data.message, data.success ? 'success' : 'error');
+                if (data.success) {
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2000);
+                }
+            });
+        });
+        
+        // 移除学生
+        function removeStudent(enrollmentId, studentName) {
+            if (confirm('确定要移除该学生吗？此操作不可恢复。')) {
+                // 发送请求移除学生
+                fetch('/remove_student', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        enrollment_id: enrollmentId
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showMessage('移除 ' + studentName + ' 成功', 'success');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1000);
+                    } else {
+                        showMessage(data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    showMessage('移除学生失败，请重试', 'error');
+                });
+            }
+        }
+        
+        // 为所有移除按钮添加事件监听器
+        document.addEventListener('DOMContentLoaded', function() {
+            const removeButtons = document.querySelectorAll('.btn-danger[data-enrollment-id]');
+            removeButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const enrollmentId = this.getAttribute('data-enrollment-id');
+                    // 获取学生姓名
+                    const studentName = this.closest('tr').querySelector('td:first-child').textContent;
+                    removeStudent(enrollmentId, studentName);
+                });
+            });
+        });
+        
+        // 跳转到人员调整并自动选择学生
+        function adjustStudent(studentId) {
+            // 获取学生信息
+            const student = studentsList.find(s => s.id == studentId);
+            if (student) {
+                document.getElementById('student_input').value = student.child_name + ' (' + student.courseName + ' ' + student.courseTime + ')';
+                document.getElementById('student_id').value = studentId;
+            } else {
+                document.getElementById('student_id').value = studentId;
+            }
+            // 滚动到人员调整部分
+            document.getElementById('move-student-section').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // 页面加载时检查是否有student_id参数
+        document.addEventListener('DOMContentLoaded', function() {
+            {% if student_id %}
+            // 延迟执行，确保DOM已完全加载
+            setTimeout(function() {
+                adjustStudent({{ student_id }});
+            }, 100);
+            {% endif %}
+        });
+        
+        // 添加学生
+        function addStudent() {
+            // 创建添加学生的模态框
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                z-index: 1000;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                overflow: auto;
+                background-color: rgba(0,0,0,0.5);
+            `;
+            
+            const modalContent = document.createElement('div');
+            modalContent.style.cssText = `
+                background-color: #fdfbf8;
+                margin: 15% auto;
+                padding: 30px;
+                border: 1px solid #e6d7c3;
+                width: 80%;
+                max-width: 500px;
+                border-radius: 15px;
+                box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            `;
+            
+            // 为模态框添加唯一ID
+            const modalId = 'add-student-modal-' + Date.now();
+            modal.id = modalId;
+            
+            modalContent.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="color: #8B0000; margin: 0;">添加学生</h2>
+                    <span onclick="document.body.removeChild(document.getElementById('${modalId}'))" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+                </div>
+                <form id="add-student-form">
+                    <div class="form-group">
+                        <label for="student-name">学生姓名 <span style="color: red;">*</span></label>
+                        <input type="text" id="student-name" name="student-name" required style="width: 100%; padding: 12px; border: 2px solid #e6d7c3; border-radius: 8px;">
+                    </div>
+                    <div class="form-group" style="margin-top: 15px;">
+                        <label for="parent-name">家长姓名</label>
+                        <input type="text" id="parent-name" name="parent-name" style="width: 100%; padding: 12px; border: 2px solid #e6d7c3; border-radius: 8px;">
+                    </div>
+                    <div class="form-group" style="margin-top: 15px;">
+                        <label for="phone">手机号码</label>
+                        <input type="tel" id="phone" name="phone" style="width: 100%; padding: 12px; border: 2px solid #e6d7c3; border-radius: 8px;">
+                    </div>
+                    <div style="text-align: center; margin-top: 30px; display: flex; gap: 15px; justify-content: center;">
+                        <button type="submit" style="padding: 12px 24px; background-color: #8B0000; color: #FFD700; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600;">确认添加</button>
+                        <button type="button" onclick="document.body.removeChild(document.getElementById('${modalId}'))" style="padding: 12px 24px; background-color: #6B8E23; color: #FFD700; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600;">取消</button>
+                    </div>
+                </form>
+            `;
+            
+            modal.appendChild(modalContent);
+            document.body.appendChild(modal);
+            
+            // 处理表单提交
+            document.getElementById('add-student-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const studentName = document.getElementById('student-name').value.trim();
+                const parentName = document.getElementById('parent-name').value.trim() || '未知';
+                const phone = document.getElementById('phone').value.trim() || '未知';
+                
+                if (!studentName) {
+                    showMessage('学生姓名为必填项', 'error');
+                    return;
+                }
+                
+                // 发送请求添加学生
+                fetch('/add_student', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        course_id: {{ class_session['id'] }},
+                        child_name: studentName,
+                        parent_name: parentName,
+                        phone: phone
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    showMessage(data.message, data.success ? 'success' : 'error');
+                    if (data.success) {
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1000);
+                    }
+                    // 移除模态框
+                    document.body.removeChild(modal);
+                })
+                .catch(error => {
+                    showMessage('添加学生失败，请重试', 'error');
+                    // 移除模态框
+                    document.body.removeChild(modal);
+                });
+            });
+        }
+        
+        // 学生列表数据
+        const studentsList = [
+            {% for student in students %}
+            { 
+                id: {{ student['id'] }}, 
+                name: '{{ student['name'] }}', 
+                child_name: '{{ student['child_name'] }}',
+                username: '{{ student['username'] }}',
+                courseName: '{{ class_session['name'] }}',
+                courseTime: '{{ class_session['start_time'] }}'
+            },
+            {% endfor %}
+        ];
+        
+        // 过滤学生
+        function filterStudents() {
+            const input = document.getElementById('student_input');
+            const filter = input.value.toUpperCase();
+            const dropdown = document.getElementById('student_dropdown');
+            
+            // 清空下拉框
+            dropdown.innerHTML = '';
+            
+            if (filter.length > 0) {
+                // 过滤匹配的学生
+                const filteredStudents = studentsList.filter(student => 
+                    student.child_name.toUpperCase().includes(filter) || 
+                    student.name.toUpperCase().includes(filter) || 
+                    student.username.toUpperCase().includes(filter)
+                );
+                
+                if (filteredStudents.length > 0) {
+                    // 显示下拉框
+                    dropdown.style.display = 'block';
+                    
+                    // 添加匹配的学生
+                    filteredStudents.forEach(student => {
+                        const div = document.createElement('div');
+                        div.innerHTML = student.child_name + ' (' + student.courseName + ' ' + student.courseTime + ')';
+                        div.style.padding = '10px';
+                        div.style.cursor = 'pointer';
+                        div.style.borderBottom = '1px solid #e6d7c3';
+                        div.onmouseover = function() {
+                            this.style.backgroundColor = '#f8f5f0';
+                        };
+                        div.onmouseout = function() {
+                            this.style.backgroundColor = 'white';
+                        };
+                        div.onclick = function() {
+                            input.value = student.child_name + ' (' + student.courseName + ' ' + student.courseTime + ')';
+                            document.getElementById('student_id').value = student.id;
+                            dropdown.style.display = 'none';
+                        };
+                        dropdown.appendChild(div);
+                    });
+                } else {
+                    dropdown.style.display = 'none';
+                }
+            } else {
+                dropdown.style.display = 'none';
+            }
+        }
+        
+        // 点击页面其他地方关闭下拉框
+        document.addEventListener('click', function(event) {
+            const input = document.getElementById('student_input');
+            const dropdown = document.getElementById('student_dropdown');
+            if (!input.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+        
+        // 显示消息
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

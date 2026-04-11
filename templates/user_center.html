@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户中心 - 书法课报名签到系统</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">书法课报名签到系统</div>
+            <div class="nav">
+                <a href="{{ url_for('index') }}">首页</a>
+                <a href="{{ url_for('courses') }}">课程列表</a>
+                <a href="{{ url_for('user_center') }}">用户中心</a>
+                <a href="{{ url_for('messages') }}">消息中心</a>
+                {% if session['role'] == 'admin' %}
+                <a href="{{ url_for('admin') }}">管理员后台</a>
+                {% endif %}
+            </div>
+            <div class="user-info">
+                <span>{{ session['name'] }}</span>
+                <a href="{{ url_for('logout') }}">注销</a>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <h1>用户中心</h1>
+        
+        <!-- 个人信息 -->
+        <div class="user-profile">
+            <h2>个人信息</h2>
+            <div class="profile-info">
+                <div class="profile-info-item">
+                    <label>姓名：</label>
+                    <span>{{ user['name'] }}</span>
+                </div>
+                <div class="profile-info-item">
+                    <label>用户名：</label>
+                    <span>{{ user['username'] }}</span>
+                </div>
+                <div class="profile-info-item">
+                    <label>手机号码：</label>
+                    <span>{{ user['phone'] }}</span>
+                </div>
+                <div class="profile-info-item">
+                    <label>孩子姓名：</label>
+                    <span>{{ user['child_name'] }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 修改个人信息 -->
+        <div class="form-container">
+            <h2>修改个人信息</h2>
+            <form id="update-profile-form">
+                <div class="form-group">
+                    <label for="update_name">家长姓名</label>
+                    <input type="text" id="update_name" name="name" value="{{ user['name'] }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="update_child_name">孩子姓名</label>
+                    <input type="text" id="update_child_name" name="child_name" value="{{ user['child_name'] }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="update_phone">手机号码</label>
+                    <input type="tel" id="update_phone" name="phone" value="{{ user['phone'] }}" required>
+                </div>
+                <button type="submit" class="btn-success">保存信息</button>
+            </form>
+        </div>
+        
+        <!-- 修改密码 -->
+        <div class="form-container">
+            <h2>修改密码</h2>
+            <form id="change-password-form">
+                <div class="form-group">
+                    <label for="old_password">原密码</label>
+                    <input type="password" id="old_password" name="old_password" required>
+                </div>
+                <div class="form-group">
+                    <label for="new_password">新密码</label>
+                    <input type="password" id="new_password" name="new_password" required>
+                    <div id="password-strength" class="password-strength" style="margin-top: 8px; font-size: 14px; color: #666;"></div>
+                    <div class="password-rules" style="margin-top: 8px; font-size: 12px; color: #888;">
+                        密码规则：至少8个字符，包含大小写字母、数字和特殊字符
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="confirm_password">确认新密码</label>
+                    <input type="password" id="confirm_password" name="confirm_password" required>
+                </div>
+                <button type="submit" class="btn-success">修改密码</button>
+            </form>
+        </div>
+        
+        <!-- 我的报名记录 -->
+        <div class="enrollments">
+            <h2>我的报名记录</h2>
+            {% for enrollment in enrollments %}
+            <div class="list-item">
+                <div class="list-item-header">
+                    <div class="list-item-title">{{ enrollment['course_name'] }}</div>
+                </div>
+                <div class="list-item-content">
+                    <div class="course-info">
+                        <div class="course-info-item"><strong>开始时间：</strong>{{ enrollment['start_time'] }}</div>
+                        <div class="course-info-item"><strong>结束时间：</strong>{{ enrollment['end_time'] }}</div>
+                    </div>
+                    <div class="enrollment-status">
+                        状态：
+                        {% if enrollment['status'] == 'paid' %}
+                        <span class="status-paid">已缴费</span>
+                        {% else %}
+                        <span class="status-completed">已完成</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div id="message" class="message" style="display: none;"></div>
+    </div>
+    <script>
+        // 修改个人信息功能
+        document.getElementById('update-profile-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('update_name').value;
+            const child_name = document.getElementById('update_child_name').value;
+            const phone = document.getElementById('update_phone').value;
+            
+            fetch('/update_profile', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: name,
+                    child_name: child_name,
+                    phone: phone
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const messageDiv = document.getElementById('message');
+                messageDiv.textContent = data.message;
+                messageDiv.className = `message ${data.success ? 'success' : 'error'}`;
+                messageDiv.style.display = 'block';
+                
+                // 3秒后隐藏消息并刷新页面
+                setTimeout(() => {
+                    messageDiv.style.display = 'none';
+                    if (data.success) {
+                        location.reload();
+                    }
+                }, 3000);
+            });
+        });
+        
+        // 密码强度检测
+        function checkPasswordStrength(password) {
+            let strength = 0;
+            let feedback = '';
+            let color = '';
+            
+            // 长度检查
+            if (password.length >= 8) strength += 1;
+            // 包含小写字母
+            if (/[a-z]/.test(password)) strength += 1;
+            // 包含大写字母
+            if (/[A-Z]/.test(password)) strength += 1;
+            // 包含数字
+            if (/[0-9]/.test(password)) strength += 1;
+            // 包含特殊字符
+            if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) strength += 1;
+            
+            switch (strength) {
+                case 0:
+                case 1:
+                    feedback = '密码强度：弱';
+                    color = '#dc3545';
+                    break;
+                case 2:
+                case 3:
+                    feedback = '密码强度：中等';
+                    color = '#ffc107';
+                    break;
+                case 4:
+                case 5:
+                    feedback = '密码强度：强';
+                    color = '#28a745';
+                    break;
+            }
+            
+            const strengthDiv = document.getElementById('password-strength');
+            strengthDiv.textContent = feedback;
+            strengthDiv.style.color = color;
+            
+            return strength >= 4; // 至少需要4个条件
+        }
+        
+        // 监听密码输入
+        document.getElementById('new_password').addEventListener('input', function() {
+            checkPasswordStrength(this.value);
+        });
+        
+        // 修改密码功能
+        document.getElementById('change-password-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const oldPassword = document.getElementById('old_password').value;
+            const newPassword = document.getElementById('new_password').value;
+            const confirmPassword = document.getElementById('confirm_password').value;
+            
+            if (newPassword !== confirmPassword) {
+                const messageDiv = document.getElementById('message');
+                messageDiv.textContent = '两次输入的新密码不一致';
+                messageDiv.className = 'message error';
+                messageDiv.style.display = 'block';
+                setTimeout(() => {
+                    messageDiv.style.display = 'none';
+                }, 3000);
+                return;
+            }
+            
+            // 验证密码强度
+            if (!checkPasswordStrength(newPassword)) {
+                const messageDiv = document.getElementById('message');
+                messageDiv.textContent = '密码强度不足，请按照规则设置密码';
+                messageDiv.className = 'message error';
+                messageDiv.style.display = 'block';
+                setTimeout(() => {
+                    messageDiv.style.display = 'none';
+                }, 3000);
+                return;
+            }
+            
+            fetch('/change_password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    old_password: oldPassword,
+                    new_password: newPassword
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const messageDiv = document.getElementById('message');
+                messageDiv.textContent = data.message;
+                messageDiv.className = `message ${data.success ? 'success' : 'error'}`;
+                messageDiv.style.display = 'block';
+                
+                // 3秒后隐藏消息
+                setTimeout(() => {
+                    messageDiv.style.display = 'none';
+                    if (data.success) {
+                        // 清空表单
+                        document.getElementById('change-password-form').reset();
+                        document.getElementById('password-strength').textContent = '';
+                    }
+                }, 3000);
+            });
+        });
+    </script>
+</body>
+</html>

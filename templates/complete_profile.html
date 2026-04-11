@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>完善个人信息 - 书法课报名签到系统</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">书法课报名签到系统</div>
+            <div class="nav">
+                <a href="{{ url_for('index') }}">首页</a>
+                <a href="{{ url_for('courses') }}">课程列表</a>
+                <a href="{{ url_for('user_center') }}">用户中心</a>
+                <a href="{{ url_for('messages') }}">消息中心</a>
+                {% if session['role'] == 'admin' %}
+                <a href="{{ url_for('admin') }}">管理员后台</a>
+                {% endif %}
+            </div>
+            <div class="user-info">
+                <span>{{ session['name'] }}</span>
+                <a href="{{ url_for('logout') }}">注销</a>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <h1>完善个人信息</h1>
+        <div class="form-container">
+            {% if error %}
+            <div class="error-message">{{ error }}</div>
+            {% endif %}
+            <form method="post">
+                <div class="form-group">
+                    <label for="name">家长姓名 <span style="color: red;">*</span></label>
+                    <input type="text" id="name" name="name" value="{{ user['name'] }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="child_name">孩子姓名 <span style="color: red;">*</span></label>
+                    <input type="text" id="child_name" name="child_name" value="{{ user['child_name'] }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">手机号码 <span style="color: red;">*</span></label>
+                    <input type="tel" id="phone" name="phone" value="{{ user['phone'] }}" required>
+                </div>
+                <button type="submit">保存信息</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

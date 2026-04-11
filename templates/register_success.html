@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册成功 - 书法课报名签到系统</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">书法课报名签到系统</div>
+            <div class="nav">
+                <a href="{{ url_for('index') }}">首页</a>
+                <a href="{{ url_for('courses') }}">课程列表</a>
+                <a href="{{ url_for('login') }}">登录</a>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <h1>注册成功</h1>
+        <div class="success-message">
+            <p>您的账号已成功创建！</p>
+            <div class="account-info">
+                <h2>您的账号信息</h2>
+                <p><strong>用户名：</strong>{{ username }}</p>
+                <p><strong>密码：</strong>{{ password }}</p>
+                <p>请妥善保存您的账号信息，您可以在用户中心查看和修改密码。</p>
+            </div>
+            <div class="action-buttons">
+                <a href="{{ url_for('login') }}" class="btn">立即登录</a>
+                <a href="{{ url_for('courses') }}" class="btn">浏览课程</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

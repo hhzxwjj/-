@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课程详情 - 书法课报名签到系统</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">书法课报名签到系统</div>
+            <div class="nav">
+                <a href="{{ url_for('index') }}">首页</a>
+                <a href="{{ url_for('courses') }}">课程列表</a>
+                <a href="{{ url_for('user_center') }}">用户中心</a>
+                <a href="{{ url_for('messages') }}">消息中心</a>
+                {% if session['role'] == 'admin' %}
+                <a href="{{ url_for('admin') }}">管理员后台</a>
+                {% endif %}
+            </div>
+            <div class="user-info">
+                <span>{{ session['name'] }}</span>
+                <a href="{{ url_for('logout') }}">注销</a>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <h1>{{ course['name'] }}</h1>
+        
+        <!-- 课程信息 -->
+        <div class="form-container">
+            <h2>课程信息</h2>
+            <div class="course-info">
+                <div class="course-info-item"><strong>总课时：</strong>{{ course['total_hours'] }}小时</div>
+                <div class="course-info-item"><strong>价格：</strong>{{ course['price'] }}元</div>
+            </div>
+            <div class="course-description">
+                <strong>课程描述：</strong>{{ course['description'] }}
+            </div>
+        </div>
+        
+        <!-- 课程详情 -->
+        <div class="form-container">
+            <h2>课程详情</h2>
+            <div class="course-card">
+                <div class="list-item-header">
+                    <div class="list-item-title">{{ course['name'] }}</div>
+                </div>
+                <div class="list-item-content">
+                    <div class="course-info">
+                        <div class="course-info-item"><strong>开始时间：</strong>{{ course['start_time'] }}</div>
+                        <div class="course-info-item"><strong>结束时间：</strong>{{ course['end_time'] }}</div>
+                        <div class="course-info-item"><strong>剩余名额：</strong>{{ course['max_students'] - course['current_students'] }}/{{ course['max_students'] }}</div>
+                    </div>
+                    
+                    {% if session['role'] != 'admin' %}
+                    <!-- 备选课程选择 -->
+                    <div class="form-group" style="margin-top: 20px;">
+                        <label for="alternate_courses">备选课程 <span style="color: red;">*</span></label>
+                        <select id="alternate_courses" name="alternate_courses" multiple style="height: 120px;">
+                            {% for alt_course in all_courses %}
+                            {% if alt_course['id'] != course['id'] %}
+                            <option value="{{ alt_course['id'] }}">{{ alt_course['name'] }} ({{ alt_course['start_time'] }})</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                        <p style="color: red; font-size: 14px; margin-top: 10px;">多选意味着愿意让出其中一个时间段，可以为其他家长孩子多一个选择，谢谢理解！</p>
+                    </div>
+                    
+                    <div class="course-action">
+                        <button class="btn-success" onclick="enroll({{ course['id'] }})">立即报名</button>
+                    </div>
+                    {% else %}
+                    <!-- 管理员查看报名名单 -->
+                    <div class="students" style="margin-top: 20px;">
+                        <h3>报名学生</h3>
+                        <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                            <a href="{{ url_for('attendance', course_id=course['id']) }}"><button class="btn-success">签到</button></a>
+                            <a href="{{ url_for('admin') }}"><button class="btn-secondary">返回</button></a>
+                        </div>
+                        <table class="student-list">
+                            <thead>
+                                <tr>
+                                    <th>学生姓名</th>
+                                    <th>家长姓名</th>
+                                    <th>手机号码</th>
+                                    <th>报名状态</th>
+                                    <th>是否有其他课程选择</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for student in enrolled_students %}
+                                <tr>
+                                    <td style="font-weight: bold;">{{ student['child_name'] }}</td>
+                                    <td>{{ student['name'] }}</td>
+                                    <td>{{ student['phone'] }}</td>
+                                    <td>
+                                        {% if student['status'] == 'pending' %}
+                                        <span class="status-pending">未缴费</span>
+                                        {% elif student['status'] == 'paid' %}
+                                        <span class="status-paid">已缴费</span>
+                                        {% else %}
+                                        <span class="status-completed">已完成</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if student['has_alternate'] %}
+                                        <span class="status-paid">有</span>
+                                        {% else %}
+                                        <span class="status-pending">无</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <button class="btn-danger" data-enrollment-id="{{ student['enrollment_id'] }}"><span style="color: #FFD700;">移除</span></button>
+                                        <button class="btn-secondary" style="margin-left: 10px;" onclick="adjustStudent({{ student['id'] }})"><span style="color: #FFD700;">调整</span></button>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="5" style="text-align: center; padding: 20px;">暂无学生报名</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div id="message" class="message" style="display: none;"></div>
+    </div>
+    <!-- 支付模态框 -->
+    <div id="payment-modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5);">
+        <div style="background-color: #fdfbf8; margin: 15% auto; padding: 30px; border: 1px solid #e6d7c3; width: 80%; max-width: 600px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.2);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="color: #8B0000; margin: 0;">去支付（待确认）</h2>
+                <span onclick="document.getElementById('payment-modal').style.display='none'" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+            </div>
+            
+            <div style="background-color: #e7f3ff; border: 1px solid #b3d8ff; color: #084298; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <div><strong>课程：</strong>{{ course['name'] }}</div>
+                <div style="margin-top: 6px;"><strong>金额：</strong>{{ course['price'] }} 元</div>
+                <div style="margin-top: 6px; font-size: 14px; color: #0b3d91;">提交“确认缴费”后会创建报名记录并标记为已缴费。</div>
+            </div>
+            
+            <div style="display: flex; justify-content: space-around; margin: 30px 0;">
+                <!-- 微信支付 -->
+                <div style="text-align: center;">
+                    <h3 style="color: #6B8E23; margin-bottom: 15px;">微信支付</h3>
+                    <div style="width: 200px; height: 200px; background-color: #f0f0f0; border: 2px dashed #ccc; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                        <span style="color: #999;">微信二维码</span>
+                    </div>
+                    <p style="margin-top: 15px; color: #666;">扫描二维码支付</p>
+                </div>
+                <!-- 支付宝支付 -->
+                <div style="text-align: center;">
+                    <h3 style="color: #6B8E23; margin-bottom: 15px;">支付宝</h3>
+                    <div style="width: 200px; height: 200px; background-color: #f0f0f0; border: 2px dashed #ccc; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                        <span style="color: #999;">支付宝二维码</span>
+                    </div>
+                    <p style="margin-top: 15px; color: #666;">扫描二维码支付</p>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 30px;">
+                <button onclick="submitPayment()" style="padding: 12px 24px; background-color: #6B8E23; color: #FFD700; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600; margin-right: 10px;">确认缴费</button>
+                <button onclick="document.getElementById('payment-modal').style.display='none'" style="padding: 12px 24px; background-color: #8B0000; color: #FFD700; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600;">关闭</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function enroll(courseId) {
+            // 获取备选课程选择
+            const selectElement = document.getElementById('alternate_courses');
+            const selectedCourses = Array.from(selectElement.selectedOptions).map(option => option.value);
+            
+            fetch(`/enroll/${courseId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ alternate_courses: selectedCourses })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const messageDiv = document.getElementById('message');
+                messageDiv.textContent = data.message;
+                messageDiv.className = `message ${data.success ? 'success' : 'error'}`;
+                messageDiv.style.display = 'block';
+                
+                // 3秒后隐藏消息
+                setTimeout(() => {
+                    messageDiv.style.display = 'none';
+                }, 3000);
+                
+                // 报名提交后进入待支付流程（不要先给“成功预期”再打断）
+                if (data.success && (data.requires_payment === undefined || data.requires_payment === true)) {
+                    setTimeout(() => {
+                        document.getElementById('payment-modal').style.display = 'block';
+                    }, 1000);
+                }
+            });
+        }
+        
+        // 移除学生
+        function removeStudent(enrollmentId, studentName) {
+            if (confirm('确定要移除该学生吗？此操作不可恢复。')) {
+                // 发送请求移除学生
+                fetch('/remove_student', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        enrollment_id: enrollmentId
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const messageDiv = document.getElementById('message');
+                    if (data.success) {
+                        messageDiv.textContent = '移除 ' + studentName + ' 成功';
+                        messageDiv.className = 'message success';
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1000);
+                    } else {
+                        messageDiv.textContent = data.message;
+                        messageDiv.className = 'message error';
+                    }
+                    messageDiv.style.display = 'block';
+                    
+                    // 3秒后隐藏消息
+                    setTimeout(() => {
+                        messageDiv.style.display = 'none';
+                    }, 3000);
+                })
+                .catch(error => {
+                    const messageDiv = document.getElementById('message');
+                    messageDiv.textContent = '移除学生失败，请重试';
+                    messageDiv.className = 'message error';
+                    messageDiv.style.display = 'block';
+                    
+                    // 3秒后隐藏消息
+                    setTimeout(() => {
+                        messageDiv.style.display = 'none';
+                    }, 3000);
+                });
+            }
+        }
+        
+        // 为所有移除按钮添加事件监听器
+        document.addEventListener('DOMContentLoaded', function() {
+            const removeButtons = document.querySelectorAll('.btn-danger[data-enrollment-id]');
+            removeButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const enrollmentId = this.getAttribute('data-enrollment-id');
+                    // 获取学生姓名
+                    const studentName = this.closest('tr').querySelector('td:first-child').textContent;
+                    removeStudent(enrollmentId, studentName);
+                });
+            });
+        });
+        
+        // 调整学生
+        function adjustStudent(studentId) {
+            // 跳转到管理员课程详情页面进行调整
+            window.location.href = '{{ url_for('admin_course', course_id=course['id']) }}?student_id=' + studentId;
+        }
+        
+        // 提交缴费
+        function submitPayment() {
+            fetch('/payment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const messageDiv = document.getElementById('message');
+                messageDiv.textContent = data.message;
+                messageDiv.className = `message ${data.success ? 'success' : 'error'}`;
+                messageDiv.style.display = 'block';
+                
+                // 关闭支付模态框
+                document.getElementById('payment-modal').style.display = 'none';
+                
+                // 3秒后隐藏消息并刷新页面
+                setTimeout(() => {
+                    messageDiv.style.display = 'none';
+                    if (data.success) {
+                        location.reload();
+                    }
+                }, 3000);
+            })
+            .catch(error => {
+                const messageDiv = document.getElementById('message');
+                messageDiv.textContent = '缴费失败，请重试';
+                messageDiv.className = 'message error';
+                messageDiv.style.display = 'block';
+                
+                // 3秒后隐藏消息
+                setTimeout(() => {
+                    messageDiv.style.display = 'none';
+                }, 3000);
+            });
+        }
+    </script>
+</body>
+</html>

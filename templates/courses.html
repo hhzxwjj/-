@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课程列表 - 书法课报名签到系统</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">书法课报名签到系统</div>
+            <div class="nav">
+                <a href="{{ url_for('index') }}">首页</a>
+                <a href="{{ url_for('courses') }}">课程列表</a>
+                <a href="{{ url_for('user_center') }}">用户中心</a>
+                <a href="{{ url_for('messages') }}">消息中心</a>
+                {% if session['role'] == 'admin' %}
+                <a href="{{ url_for('admin') }}">管理员后台</a>
+                {% endif %}
+            </div>
+            <div class="user-info">
+                <span>{{ session['name'] }}</span>
+                <a href="{{ url_for('logout') }}">注销</a>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <h1>课程列表</h1>
+        {% for course in courses %}
+        <div class="course-card">
+            <h3>{{ course['name'] }}</h3>
+            <div class="course-info">
+                <div class="course-info-item">总课时：{{ course['total_hours'] }}小时</div>
+                <div class="course-info-item">价格：{{ course['price'] }}元</div>
+                <div class="course-info-item">开始时间：{{ course['start_time'] }}</div>
+                <div class="course-info-item">结束时间：{{ course['end_time'] }}</div>
+                <div class="course-info-item">剩余名额：{{ course['max_students'] - course['current_students'] }}/{{ course['max_students'] }}</div>
+            </div>
+            <div class="course-description">{{ course['description'] }}</div>
+            <div class="course-action">
+                <a href="{{ url_for('course_detail', course_id=course['id']) }}"><button>查看详情</button></a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首页 - 书法课报名签到系统</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">书法课报名签到系统</div>
+            <div class="nav">
+                <a href="{{ url_for('index') }}">首页</a>
+                <a href="{{ url_for('courses') }}">课程列表</a>
+                <a href="{{ url_for('user_center') }}">用户中心</a>
+                <a href="{{ url_for('messages') }}">消息中心</a>
+                {% if session['role'] == 'admin' %}
+                <a href="{{ url_for('admin') }}">管理员后台</a>
+                {% endif %}
+            </div>
+            <div class="user-info">
+                <span>{{ session['name'] }}</span>
+                <a href="{{ url_for('logout') }}">注销</a>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <h1>欢迎使用书法课报名签到系统</h1>
+        <div class="welcome">
+            您好，{{ user['name'] }}！欢迎回到系统。
+        </div>
+        <div class="feature-section">
+            <div class="collapsible">
+                <div class="collapsible-header">
+                    <h3>报名系统</h3>
+                    <button class="collapse-btn"></button>
+                </div>
+                <div class="collapsible-content active">
+                    <p>您可以在网站上浏览并报名书法课程，选择适合您的时间段，完成缴费后即可查看课程安排。</p>
+                    <div class="course-action">
+                        <a href="{{ url_for('courses') }}"><button>立即报名</button></a>
+                    </div>
+                </div>
+            </div>
+            <div class="collapsible">
+                <div class="collapsible-header">
+                    <h3>签到系统</h3>
+                    <button class="collapse-btn"></button>
+                </div>
+                <div class="collapsible-content active">
+                    <p>每次上课前，管理员会进行点名，记录您的出勤情况。您可以在用户中心查看自己的考勤记录。</p>
+                    {% if session['role'] == 'admin' %}
+                    <div class="course-action">
+                        <a href="{{ url_for('admin') }}"><button>管理签到</button></a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="collapsible">
+                <div class="collapsible-header">
+                    <h3>消息中心</h3>
+                    <button class="collapse-btn"></button>
+                </div>
+                <div class="collapsible-content active">
+                    <p>您可以与管理员进行沟通，申请调课或咨询其他问题。</p>
+                    <div class="course-action">
+                        <a href="{{ url_for('messages') }}"><button>查看消息</button></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

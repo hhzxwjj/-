@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册 - 书法课报名签到系统</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">书法课报名签到系统</div>
+            <div class="nav">
+                <a href="{{ url_for('index') }}">首页</a>
+                <a href="{{ url_for('courses') }}">课程列表</a>
+                <a href="{{ url_for('login') }}">登录</a>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <h1>注册</h1>
+        <div class="form-container">
+            {% if error %}
+            <div class="error-message">{{ error }}</div>
+            {% endif %}
+            <form method="post">
+                <div class="form-group">
+                    <label for="phone">手机号</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="tel" id="phone" name="phone" required style="flex: 1;">
+                        <button type="button" id="send-code-btn" class="btn-secondary" onclick="sendVerificationCode()">获取验证码</button>
+                    </div>
+                    <div id="register-code-display" style="display: none; margin-top: 8px; color: #c41e3a; font-weight: bold; font-size: 16px; letter-spacing: 2px;"></div>
+                </div>
+                <div class="form-group">
+                    <label for="verification_code">验证码</label>
+                    <input type="text" id="verification_code" name="verification_code" required>
+                </div>
+                <div class="form-group">
+                    <label for="name">家长姓名</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="child_name">孩子姓名</label>
+                    <input type="text" id="child_name" name="child_name" required>
+                </div>
+                <button type="submit">注册</button>
+            </form>
+            <div class="form-footer">
+                已有账号？<a href="{{ url_for('login') }}">立即登录</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        // 发送验证码
+        function sendVerificationCode() {
+            const phone = document.getElementById('phone').value;
+            if (!phone) {
+                alert('请输入手机号');
+                return;
+            }
+            
+            // 验证手机号格式
+            const phoneRegex = /^1[3-9]\d{9}$/;
+            if (!phoneRegex.test(phone)) {
+                alert('请输入正确的手机号');
+                return;
+            }
+            
+            const sendBtn = document.getElementById('send-code-btn');
+            sendBtn.disabled = true;
+            sendBtn.textContent = '发送中...';
+            
+            fetch('/send_verification_code', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify({ phone: phone })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // 开发环境：直接在页面上显示验证码
+                    const codeDisplay = document.getElementById('register-code-display');
+                    codeDisplay.textContent = '您的验证码：' + data.verification_code;
+                    codeDisplay.style.display = 'block';
+                    // 开始倒计时
+                    let countdown = 60;
+                    sendBtn.textContent = `${countdown}秒后重新发送`;
+                    const timer = setInterval(() => {
+                        countdown--;
+                        sendBtn.textContent = `${countdown}秒后重新发送`;
+                        if (countdown <= 0) {
+                            clearInterval(timer);
+                            sendBtn.disabled = false;
+                            sendBtn.textContent = '获取验证码';
+                        }
+                    }, 1000);
+                } else {
+                    alert(data.message);
+                    sendBtn.disabled = false;
+                    sendBtn.textContent = '获取验证码';
+                }
+            })
+            .catch(error => {
+                alert('发送验证码失败，请重试');
+                sendBtn.disabled = false;
+                sendBtn.textContent = '获取验证码';
+            });
+        }
+    </script>
+</body>
+</html>

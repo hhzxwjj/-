@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - 书法课报名签到系统</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">书法课报名签到系统</div>
+            <div class="nav">
+                <a href="{{ url_for('index') }}">首页</a>
+                <a href="{{ url_for('courses') }}">课程列表</a>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <h1>登录</h1>
+        <div class="form-container">
+            {% if error %}
+            <div class="error-message">{{ error }}</div>
+            {% endif %}
+            
+            <!-- 登录方式切换 -->
+            <div class="login-mode-toggle" style="display: flex; justify-content: center; margin-bottom: 30px; border-bottom: 1px solid #e6d7c3;">
+                <button id="password-login-btn" class="tab-btn {% if mode != 'code' %}active{% endif %}" onclick="switchLoginMode('password')">密码登录</button>
+                <button id="code-login-btn" class="tab-btn {% if mode == 'code' %}active{% endif %}" onclick="switchLoginMode('code')">验证码登录</button>
+            </div>
+            
+            <!-- 密码登录表单 -->
+            <form id="password-login-form" method="post" style="display: {% if mode != 'code' %}block{% else %}none{% endif %}">
+                <div class="form-group">
+                    <label for="username">用户名</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">密码</label>
+                    <input type="password" id="password" name="password" value="{{ generated_password or '' }}" required>
+                    {% if generated_password %}
+                    <div class="password-hint" style="font-size: 12px; color: #666; margin-top: 5px;">这是您的初始密码，请在登录后修改</div>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="captcha">验证码</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="captcha" name="captcha" required>
+                        <img id="captcha-image" class="captcha-image" src="" alt="验证码" onclick="refreshCaptcha()">
+                    </div>
+                </div>
+                <button type="submit">登录</button>
+            </form>
+            
+            <!-- 验证码登录表单 -->
+            <form id="code-login-form" method="post" style="display: {% if mode == 'code' %}block{% else %}none{% endif %};">
+                <div class="form-group">
+                    <label for="login-phone">手机号</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="tel" id="login-phone" name="phone" value="{{ phone or '' }}" required style="flex: 1;">
+                        <button type="button" id="login-send-code-btn" class="btn-secondary" onclick="sendLoginVerificationCode()">获取验证码</button>
+                    </div>
+                    <div id="login-code-display" style="display: none; margin-top: 8px; color: #c41e3a; font-weight: bold; font-size: 16px; letter-spacing: 2px;"></div>
+                </div>
+                <div class="form-group">
+                    <label for="login-verification-code">验证码</label>
+                    <input type="text" id="login-verification-code" name="verification_code" required>
+                </div>
+                <button type="submit">登录</button>
+            </form>
+            
+
+        </div>
+    </div>
+    <script>
+        // 刷新验证码
+        function refreshCaptcha() {
+            document.getElementById('captcha-image').src = '{{ url_for('get_captcha') }}?' + Math.random();
+        }
+        
+        // 页面加载时刷新验证码并检查是否是验证码登录
+        window.onload = function() {
+            refreshCaptcha();
+            
+            // 检查是否是验证码登录模式（通过表单是否有phone字段）
+            const phoneField = document.getElementById('login-phone');
+            if (phoneField) {
+                // 检查是否有phone值，如果有，切换到验证码登录模式
+                const urlParams = new URLSearchParams(window.location.search);
+                const mode = urlParams.get('mode');
+                if (mode === 'code' || (phoneField.value && phoneField.value.trim() !== '')) {
+                    switchLoginMode('code');
+                }
+            }
+        };
+        
+        // 切换登录方式
+        function switchLoginMode(mode) {
+            if (mode === 'password') {
+                document.getElementById('password-login-form').style.display = 'block';
+                document.getElementById('code-login-form').style.display = 'none';
+                document.getElementById('password-login-btn').classList.add('active');
+                document.getElementById('code-login-btn').classList.remove('active');
+            } else {
+                document.getElementById('password-login-form').style.display = 'none';
+                document.getElementById('code-login-form').style.display = 'block';
+                document.getElementById('password-login-btn').classList.remove('active');
+                document.getElementById('code-login-btn').classList.add('active');
+            }
+        }
+        
+        // 发送登录验证码
+        function sendLoginVerificationCode() {
+            const phone = document.getElementById('login-phone').value;
+            if (!phone) {
+                alert('请输入手机号');
+                return;
+            }
+            
+            // 验证手机号格式
+            const phoneRegex = /^1[3-9]\d{9}$/;
+            if (!phoneRegex.test(phone)) {
+                alert('请输入正确的手机号');
+                return;
+            }
+            
+            const sendBtn = document.getElementById('login-send-code-btn');
+            sendBtn.disabled = true;
+            sendBtn.textContent = '发送中...';
+            
+            fetch('/send_verification_code', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify({ phone: phone })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // 开发环境：直接在页面上显示验证码
+                    const codeDisplay = document.getElementById('login-code-display');
+                    codeDisplay.textContent = '您的验证码：' + data.verification_code;
+                    codeDisplay.style.display = 'block';
+                    // 开始倒计时
+                    let countdown = 60;
+                    sendBtn.textContent = `${countdown}秒后重新发送`;
+                    const timer = setInterval(() => {
+                        countdown--;
+                        sendBtn.textContent = `${countdown}秒后重新发送`;
+                        if (countdown <= 0) {
+                            clearInterval(timer);
+                            sendBtn.disabled = false;
+                            sendBtn.textContent = '获取验证码';
+                        }
+                    }, 1000);
+                } else {
+                    alert(data.message);
+                    sendBtn.disabled = false;
+                    sendBtn.textContent = '获取验证码';
+                }
+            })
+            .catch(error => {
+                alert('发送验证码失败，请重试');
+                sendBtn.disabled = false;
+                sendBtn.textContent = '获取验证码';
+            });
+        }
+    </script>
+</body>
+</html>

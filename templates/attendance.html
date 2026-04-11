@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>签到 - 书法课报名签到系统</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">书法课报名签到系统</div>
+            <div class="nav">
+                <a href="{{ url_for('index') }}">首页</a>
+                <a href="{{ url_for('courses') }}">课程列表</a>
+                <a href="{{ url_for('user_center') }}">用户中心</a>
+                <a href="{{ url_for('messages') }}">消息中心</a>
+                <a href="{{ url_for('admin') }}">管理员后台</a>
+            </div>
+            <div class="user-info">
+                <span>{{ session['name'] }}</span>
+                <a href="{{ url_for('logout') }}">注销</a>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <h1>签到</h1>
+        
+        <!-- 课程信息 -->
+        <div class="form-container">
+            <h2>课程信息</h2>
+            <div class="course-info">
+                <div class="course-info-item"><strong>课程名称：</strong>{{ class_session['name'] }}</div>
+                <div class="course-info-item"><strong>开始时间：</strong>{{ class_session['start_time'] }}</div>
+                <div class="course-info-item"><strong>结束时间：</strong>{{ class_session['end_time'] }}</div>
+            </div>
+        </div>
+        
+        <!-- 签到表单 -->
+        <div class="form-container">
+            <h2>签到管理</h2>
+            <form method="post">
+                <div class="form-group">
+                    <label for="class_date">上课日期</label>
+                    <input type="date" id="class_date" name="class_date" required>
+                </div>
+                <div class="form-group">
+                    <label>课程次数</label>
+                    <input type="text" value="第{{ class_number }}次课" disabled style="background-color: #f8f9fa; cursor: not-allowed;">
+                </div>
+                <div style="margin: 20px 0; display: flex; gap: 15px;">
+                    <button type="submit" class="btn-success">提交签到</button>
+                    <a href="{{ url_for('admin_course', course_id=class_session['id']) }}"><button type="button" class="btn-secondary">返回</button></a>
+                </div>
+                <table class="student-list">
+                    <thead>
+                        <tr>
+                            <th>孩子姓名</th>
+                            <th>家长姓名</th>
+                            <th>家长电话</th>
+                            <th>出勤状态</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                        <tr>
+                            <td><a href="#" onclick="showStudentInfo('{{ student['name'] }}', '{{ student['child_name'] }}', '{{ student['phone'] }}', '{{ student['email'] or '未设置' }}', '{{ student['id'] }}'); return false;">{{ student['child_name'] }}</a></td>
+                            <td>{{ student['name'] }}</td>
+                            <td>{{ student['phone'] }}</td>
+                            <td>
+                                <input type="checkbox" class="attendance-checkbox" name="attendance_{{ student['enrollment_id'] }}" value="present">
+                                到
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </form>
+        </div>
+    </div>
+    
+    <!-- 学生信息模态框 -->
+    <div id="student-modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5);">
+        <div style="background-color: #fdfbf8; margin: 15% auto; padding: 30px; border: 1px solid #e6d7c3; width: 80%; max-width: 500px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.2);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="color: #8B0000; margin: 0;">学生详细信息</h2>
+                <span onclick="document.getElementById('student-modal').style.display='none'" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+            </div>
+            <div id="student-info" style="margin: 20px 0;">
+                <!-- 学生信息将通过JavaScript动态填充 -->
+            </div>
+            <div style="margin-top: 30px;">
+                <h3 style="color: #6B8E23; margin-bottom: 15px;">发送消息</h3>
+                <form id="message-form">
+                    <input type="hidden" id="receiver_id" name="receiver_id">
+                    <div class="form-group">
+                        <label for="message-content">消息内容</label>
+                        <textarea id="message-content" name="message-content" rows="4" required style="width: 100%; padding: 12px; border: 2px solid #e6d7c3; border-radius: 8px; resize: vertical;"></textarea>
+                    </div>
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button type="submit" style="padding: 12px 24px; background-color: #8B0000; color: #FFD700; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600;">发送消息</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 显示学生信息模态框
+        function showStudentInfo(parentName, childName, phone, email, userId) {
+            const studentInfo = document.getElementById('student-info');
+            const receiverId = document.getElementById('receiver_id');
+            
+            studentInfo.innerHTML = `
+                <div style="margin-bottom: 15px;">
+                    <strong>家长姓名：</strong>${parentName}
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <strong>孩子姓名：</strong>${childName}
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <strong>联系电话：</strong>${phone}
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <strong>邮箱：</strong>${email}
+                </div>
+            `;
+            
+            receiverId.value = userId;
+            document.getElementById('student-modal').style.display = 'block';
+        }
+        
+        // 发送消息
+        document.getElementById('message-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const receiverId = document.getElementById('receiver_id').value;
+            const content = document.getElementById('message-content').value;
+            
+            if (!content) return;
+            
+            fetch('{{ url_for('send_message') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `receiver_id=${receiverId}&content=${encodeURIComponent(content)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('消息发送成功！');
+                    document.getElementById('message-content').value = '';
+                    document.getElementById('student-modal').style.display = 'none';
+                } else {
+                    alert('消息发送失败，请重试。');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
