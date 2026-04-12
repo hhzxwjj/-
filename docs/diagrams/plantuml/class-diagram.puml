@@ -1,0 +1,111 @@
+@startuml 类图
+skinparam backgroundColor #FEFEFE
+skinparam classAttributeIconSize 0
+skinparam classFontSize 14
+skinparam classAttributeFontSize 12
+
+title 书法报名系统核心类图
+
+class FlaskApp << (A,#FFAAAA) >> {
+  + app: Flask
+  + socketio: SocketIO
+  + static_folder: str
+  + template_folder: str
+  --
+  + __init__()
+}
+
+class DatabaseConnection << (C,#ADD1B2) >> {
+  - conn: sqlite3.Connection
+  --
+  + __enter__(): Connection
+  + __exit__(exc_type, exc_val, exc_tb)
+}
+
+class RouteHandlers << (C,#ADD1B2) >> {
+  -- 用户认证 --
+  + login(): Response
+  + register(): Response
+  + logout(): Response
+  + complete_profile(): Response
+  + change_password(): JSON
+  -- 课程管理 --
+  + courses(): Response
+  + course_detail(course_id): Response
+  + add_course(): Response
+  -- 报名缴费 --
+  + enroll(course_id): JSON
+  + payment(): JSON
+  -- 管理后台 --
+  + admin(): Response
+  + attendance(course_id): Response
+  + hours_management(): Response
+  + move_student(): JSON
+  + remove_student(): JSON
+  + add_student(): JSON
+  -- 消息通信 --
+  + messages(): Response
+  + send_message(): JSON
+  + api_conversation(other_user_id): JSON
+}
+
+class WebSocketHandlers << (C,#ADD1B2) >> {
+  + handle_connect()
+  + handle_disconnect()
+  + handle_join_course(data)
+  + handle_leave_course(data)
+  + handle_send_message(data)
+  + handle_attendance_update(data)
+  + handle_course_enrollment(data)
+}
+
+class SecurityUtils << (U,#FFE0A0) >> {
+  + {static} hash_password(password: str): str
+  + {static} verify_password(password, hashed): bool
+  + {static} generate_captcha(return_base64): str/BytesIO
+  + {static} check_captcha(user_input): bool
+  + {static} validate_phone(phone): bool
+  + {static} rate_limit(max_requests, window): decorator
+}
+
+class DatabaseInit << (C,#ADD1B2) >> {
+  + {static} init_db()
+  + {static} init_admin()
+}
+
+class ErrorHandlers << (C,#ADD1B2) >> {
+  + not_found(error): Response
+  + internal_error(error): Response
+  + rate_limit_handler(error): Response
+}
+
+class DatabaseConnection {
+  + __enter__()
+  + __exit__(...)
+}
+
+FlaskApp --> RouteHandlers : routes
+FlaskApp --> WebSocketHandlers : socketio events
+FlaskApp --> ErrorHandlers : error handlers
+
+RouteHandlers ..> DatabaseConnection : uses
+RouteHandlers ..> SecurityUtils : uses
+RouteHandlers ..> DatabaseInit : uses
+
+WebSocketHandlers ..> DatabaseConnection : uses
+
+note right of SecurityUtils
+  安全工具类：
+  - PBKDF2-HMAC-SHA256 密码哈希
+  - 图形验证码生成与校验
+  - 手机号格式验证
+  - 请求频率限制装饰器
+end note
+
+note bottom of RouteHandlers
+  主路由模块 app/routes/main.py
+  包含所有 HTTP API 路由和
+  WebSocket 事件处理函数
+end note
+
+@enduml

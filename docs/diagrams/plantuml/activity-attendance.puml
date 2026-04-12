@@ -1,0 +1,61 @@
+@startuml 活动图_签到
+skinparam backgroundColor #FEFEFE
+
+title 管理员签到活动图
+
+|#LightGreen|管理员|
+|#LightBlue|系统|
+|#LightYellow|数据库|
+
+|管理员|
+start
+:登录管理后台;
+:选择课程;
+:进入签到页面;
+:选择上课日期;
+
+|系统|
+:计算本次课次;
+:加载该课程所有已缴费学员;
+
+|管理员|
+while (还有未处理学员?) is (是)
+  :选择学员;
+  :设置出勤状态
+  (出勤/缺勤/请假);
+endwhile (否)
+
+:提交签到;
+
+|系统|
+while (遍历所有学员) is (下一位)
+  if (该日期已有记录?) then (是)
+    :获取旧状态;
+    :UPDATE attendances;
+  else (否)
+    :INSERT attendances;
+  endif
+  
+  if (状态变化?) then (是)
+    if (旧≠present 且 新=present) then (是)
+      :attendance_count + 1;
+    elseif (旧=present 且 新≠present) then (是)
+      :attendance_count - 1;
+    else (否)
+    endif
+  endif
+endwhile (完成)
+
+|数据库|
+:COMMIT;
+
+|系统|
+:WebSocket广播
+attendance_update;
+:返回签到成功;
+
+|管理员|
+:查看签到结果;
+
+stop
+@enduml

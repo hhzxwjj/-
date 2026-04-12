@@ -1,0 +1,67 @@
+@startuml 活动图_报名缴费
+skinparam backgroundColor #FEFEFE
+skinparam handwritten false
+
+title 用户报名缴费活动图
+
+|#LightBlue|家长/学员|
+|#LightGreen|系统|
+|#LightYellow|数据库|
+
+|家长/学员|
+start
+:浏览课程列表;
+:选择感兴趣课程;
+:查看课程详情;
+
+if (是否已登录?) then (否)
+  :跳转登录页面;
+  :完成登录;
+endif
+
+if (个人信息是否完整?) then (否)
+  :跳转完善信息页面;
+  :填写姓名、孩子姓名、手机号;
+endif
+
+:点击"立即报名";
+:选择备选课程（可选）;
+:确认报名;
+
+|系统|
+:校验课程余量;
+:校验是否重复报名;
+:保存报名意向到Session;
+:跳转缴费页面;
+
+|家长/学员|
+:确认缴费;
+
+|系统|
+:再次校验课程余量;
+:再次校验重复报名;
+:BEGIN TRANSACTION;
+
+|数据库|
+:INSERT enrollments (status='paid');
+:INSERT alternate_courses;
+:UPDATE courses.current_students + 1;
+
+|系统|
+:COMMIT TRANSACTION;
+:清除Session课程信息;
+:返回报名成功;
+
+|家长/学员|
+:查看报名记录;
+
+if (报名成功?) then (是)
+  :显示成功提示;
+else (否)
+  :显示失败原因;
+  :重新尝试或联系管理员;
+endif
+
+stop
+
+@enduml

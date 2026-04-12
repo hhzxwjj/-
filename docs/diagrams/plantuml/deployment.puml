@@ -1,0 +1,81 @@
+@startuml 部署图
+skinparam backgroundColor #FEFEFE
+
+title 书法报名系统部署图
+
+node "客户端设备" as Client {
+    artifact "Chrome / Edge / Firefox" as Browser
+    artifact "HTML5 + CSS3 + JS" as Frontend
+}
+
+node "应用服务器" as AppServer {
+    node "Python 3.10+ 运行环境" as PythonEnv {
+        component "Flask 2.0.1" as Flask
+        component "Flask-SocketIO 5.1.1" as SocketIO
+        component "Werkzeug WSGI" as Werkzeug
+        component "Jinja2 模板引擎" as Jinja2
+    }
+    
+    node "应用代码" as AppCode {
+        artifact "app/routes/main.py" as Routes
+        artifact "app/models/database.py" as Models
+        artifact "app/__init__.py" as Init
+    }
+    
+    node "静态资源" as Static {
+        artifact "static/style.css" as CSS
+        artifact "static/script.js" as JS
+    }
+    
+    node "模板文件" as Templates {
+        artifact "templates/*.html" as HTML
+    }
+}
+
+node "数据存储层" as Storage {
+    database "SQLite" as SQLite {
+        artifact "calligraphy_system.db" as DBFile
+    }
+}
+
+node "日志存储" as Logs {
+    artifact "app.log" as AppLog
+    artifact "server.out.log" as OutLog
+    artifact "server.err.log" as ErrLog
+}
+
+' 生产环境扩展
+node "生产环境（可选）" as Production {
+    node "Nginx 反向代理" as Nginx
+    node "Gunicorn\nEventlet Worker" as Gunicorn
+}
+
+' 关系
+Client --> AppServer : HTTP 1.1 / WebSocket
+Browser --> Frontend : 渲染
+
+AppServer --> Storage : SQLite API
+AppServer --> Logs : 文件写入
+
+Flask --> Routes : 路由分发
+Flask --> Jinja2 : 模板渲染
+SocketIO --> Routes : WebSocket事件
+Routes --> Models : 数据访问
+
+Nginx --> Gunicorn : 反向代理
+Gunicorn --> Flask : WSGI
+Nginx --> Static : 静态文件直返
+
+note right of Production
+  生产环境建议架构：
+  Nginx (80/443) -> Gunicorn (8000)
+  -> Flask-SocketIO 应用
+end note
+
+note right of AppServer
+  开发/演示环境：
+  python run.py
+  直接启动于 5000 端口
+end note
+
+@enduml

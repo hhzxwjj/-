@@ -1,0 +1,30 @@
+@startuml 数据流图_顶层
+skinparam backgroundColor #FEFEFE
+
+title 数据流图 - 顶层图 (DFD Level 0)
+
+rectangle "外部实体" {
+    actor "家长/学员" as Parent
+    actor "管理员" as Admin
+}
+
+rectangle "书法报名\n管理系统" as System {
+    component "系统核心" as Core
+}
+
+Parent --> Core : ① 报名 / 查询 / 沟通
+Core --> Parent : ② 课程信息 / 消息 / 课时
+
+Admin --> Core : ③ 管理 / 统计 / 回复
+Core --> Admin : ④ 数据报表 / 学员信息
+
+note right of Core
+  系统功能范围：
+  - 用户认证与管理
+  - 课程发布与浏览
+  - 在线报名与缴费
+  - 签到与课时统计
+  - 实时消息通信
+end note
+
+@enduml
