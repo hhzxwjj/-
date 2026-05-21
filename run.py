@@ -19,5 +19,15 @@ if __name__ == '__main__':
     # 创建static目录
     if not os.path.exists('static'):
         os.makedirs('static')
+    
+    # 读取环境变量配置
+    debug_mode = os.environ.get('FLASK_DEBUG', 'false').lower() == 'true'
+    host = os.environ.get('FLASK_HOST', '0.0.0.0')
+    port = int(os.environ.get('FLASK_PORT', 5000))
+    
+    print(f'[*] 启动服务: http://{host}:{port}')
+    print(f'[*] Debug模式: {debug_mode}')
+    
     # 启动Flask-SocketIO应用
-    socketio.run(app, debug=True, host='0.0.0.0', port=5000)
+    # 注意：Windows环境下debug=True可能导致reloader与SocketIO冲突，建议生产环境使用debug=False
+    socketio.run(app, debug=debug_mode, host=host, port=port, use_reloader=False)
