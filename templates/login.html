@@ -60,7 +60,6 @@
                         <input type="tel" id="login-phone" name="phone" value="{{ phone or '' }}" required style="flex: 1;">
                         <button type="button" id="login-send-code-btn" class="btn-secondary" onclick="sendLoginVerificationCode()">获取验证码</button>
                     </div>
-                    <div id="login-code-display" style="display: none; margin-top: 8px; color: #c41e3a; font-weight: bold; font-size: 16px; letter-spacing: 2px;"></div>
                 </div>
                 <div class="form-group">
                     <label for="login-verification-code">验证码</label>
@@ -133,16 +132,17 @@
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                credentials: 'same-origin',
                 body: JSON.stringify({ phone: phone })
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // 开发环境：直接在页面上显示验证码
-                    const codeDisplay = document.getElementById('login-code-display');
-                    codeDisplay.textContent = '您的验证码：' + data.verification_code;
-                    codeDisplay.style.display = 'block';
+                    // 开发环境：显示验证码，方便测试
+                    if (data.verification_code) {
+                        alert(`验证码已发送，请查收：${data.verification_code}`);
+                    } else {
+                        alert('验证码已发送，请查收');
+                    }
                     // 开始倒计时
                     let countdown = 60;
                     sendBtn.textContent = `${countdown}秒后重新发送`;
