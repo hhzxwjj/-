@@ -18,17 +18,17 @@
             </div>
         </div>
     </div>
-    <div class="container">
-        <h1>登录</h1>
-        <div class="form-container">
+    <div class="container" style="max-width: 520px;">
+        <h1>欢迎回来</h1>
+        <div class="form-container" style="padding: 35px;">
             {% if error %}
-            <div class="error-message">{{ error }}</div>
+            <div class="error-message" style="animation: shake 0.4s ease;">{{ error }}</div>
             {% endif %}
             
             <!-- 登录方式切换 -->
-            <div class="login-mode-toggle" style="display: flex; justify-content: center; margin-bottom: 30px; border-bottom: 1px solid #e6d7c3;">
-                <button id="password-login-btn" class="tab-btn {% if mode != 'code' %}active{% endif %}" onclick="switchLoginMode('password')">密码登录</button>
-                <button id="code-login-btn" class="tab-btn {% if mode == 'code' %}active{% endif %}" onclick="switchLoginMode('code')">验证码登录</button>
+            <div class="login-mode-toggle" style="display: flex; justify-content: center; margin-bottom: 30px; background: rgba(139,0,0,0.04); border-radius: 12px; padding: 4px; border: none;">
+                <button id="password-login-btn" class="tab-btn {% if mode != 'code' %}active{% endif %}" onclick="switchLoginMode('password')" style="flex:1; border-radius: 10px; border: none; background: transparent; color: var(--c-text-muted); font-size: 15px; padding: 12px;">密码登录</button>
+                <button id="code-login-btn" class="tab-btn {% if mode == 'code' %}active{% endif %}" onclick="switchLoginMode('code')" style="flex:1; border-radius: 10px; border: none; background: transparent; color: var(--c-text-muted); font-size: 15px; padding: 12px;">验证码登录</button>
             </div>
             
             <!-- 密码登录表单 -->
