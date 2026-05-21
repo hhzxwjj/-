@@ -10,6 +10,12 @@ body {
     margin: 0;
     padding: 0;
     background-color: #f8f5f0;
+    background-image:
+        linear-gradient(180deg, rgba(248, 245, 240, 0.86), rgba(248, 245, 240, 0.92)),
+        url("images/real-calligraphy-gallery-2.jpg");
+    background-size: cover;
+    background-position: center top;
+    background-attachment: fixed;
     color: #333;
     line-height: 1.6;
     transition: all 0.3s ease;
@@ -65,14 +71,15 @@ html {
 
 /* 头部样式 */
 .header {
-    background: linear-gradient(135deg, #8B0000, #A0522D);
+    background: rgba(18, 18, 18, 0.78);
     color: #FFD700;
     padding: 20px 0;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
     position: sticky;
     top: 0;
     z-index: 1000;
-    border-bottom: 3px solid #FFD700;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(12px);
     transition: all 0.3s ease;
 }
 
@@ -231,7 +238,7 @@ html {
     max-width: 1200px;
     margin: 50px auto;
     padding: 50px;
-    background-color: #fff9f0;
+    background-color: rgba(255, 249, 240, 0.94);
     border-radius: 20px;
     box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
     animation: fadeIn 0.8s ease-out;
@@ -239,7 +246,8 @@ html {
     position: relative;
     overflow: hidden;
     transition: all 0.3s ease;
-    background: linear-gradient(135deg, #fff9f0, #fff);
+    background: linear-gradient(135deg, rgba(255, 249, 240, 0.94), rgba(255, 255, 255, 0.92));
+    backdrop-filter: blur(8px);
 }
 
 .container:hover {
@@ -364,7 +372,7 @@ h3::before {
 
 /* 表单样式 */
 .form-container {
-    background-color: #fdfbf8;
+    background-color: rgba(253, 251, 248, 0.94);
     padding: 40px;
     border-radius: 16px;
     margin-bottom: 40px;
@@ -372,7 +380,8 @@ h3::before {
     border: 1px solid #e6d7c3;
     position: relative;
     transition: all 0.3s ease;
-    background: linear-gradient(135deg, #fdfbf8, #fff);
+    background: linear-gradient(135deg, rgba(253, 251, 248, 0.94), rgba(255, 255, 255, 0.90));
+    backdrop-filter: blur(8px);
 }
 
 .form-container:hover {
@@ -565,7 +574,7 @@ button:active {
 }
 
 .list-item {
-    background-color: #fdfbf8;
+    background-color: rgba(253, 251, 248, 0.94);
     padding: 30px;
     border-radius: 16px;
     margin-bottom: 25px;
@@ -575,7 +584,8 @@ button:active {
     border: 1px solid #e6d7c3;
     position: relative;
     overflow: hidden;
-    background: linear-gradient(135deg, #fdfbf8, #fff);
+    background: linear-gradient(135deg, rgba(253, 251, 248, 0.94), rgba(255, 255, 255, 0.90));
+    backdrop-filter: blur(8px);
 }
 
 .list-item::before {
@@ -636,7 +646,7 @@ button:active {
 /* 卡片样式 */
 .course-card,
 .class-card {
-    background-color: #fdfbf8;
+    background-color: rgba(253, 251, 248, 0.94);
     padding: 35px;
     border-radius: 16px;
     margin-bottom: 30px;
@@ -646,7 +656,8 @@ button:active {
     border: 1px solid #e6d7c3;
     position: relative;
     overflow: hidden;
-    background: linear-gradient(135deg, #fdfbf8, #fff);
+    background: linear-gradient(135deg, rgba(253, 251, 248, 0.94), rgba(255, 255, 255, 0.90));
+    backdrop-filter: blur(8px);
 }
 
 .course-card::before,
@@ -1190,13 +1201,14 @@ button:active {
     max-width: 500px;
     margin: 100px auto;
     padding: 45px;
-    background-color: #fff9f0;
+    background-color: rgba(255, 249, 240, 0.94);
     border-radius: 15px;
     box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
     animation: fadeIn 0.6s ease-out;
     border: 1px solid #e6d7c3;
     position: relative;
     overflow: hidden;
+    backdrop-filter: blur(8px);
 }
 
 .login-container::before,
@@ -1775,4 +1787,170 @@ a:hover::after {
 .login-link a:hover::after,
 .register-link a:hover::after {
     background-color: #6B0000;
+}
+
+/* ============================================================
+   首页仪表板样式（与宣传页 landing.html 风格统一）
+   ============================================================ */
+
+/* 个人欢迎横幅 */
+.dashboard-hero {
+    background: linear-gradient(135deg, #8B0000 0%, #A0522D 50%, #8B0000 100%);
+    color: #FFD700;
+    padding: 60px 30px 50px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.dashboard-hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.5;
+}
+
+.dashboard-hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.dashboard-hero-greeting {
+    font-size: 32px;
+    font-family: 'STXingkai', 'STKaiti', 'KaiTi', 'SimSun', serif;
+    letter-spacing: 6px;
+    margin-bottom: 10px;
+    text-shadow: 0 3px 10px rgba(0,0,0,0.3);
+}
+
+.dashboard-hero-sub {
+    font-size: 16px;
+    font-family: 'STKaiti', 'SimSun', serif;
+    letter-spacing: 3px;
+    opacity: 0.85;
+}
+
+/* 波浪分隔（从横幅过渡到内容区） */
+.dashboard-hero::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 40px;
+    background: linear-gradient(180deg, rgba(248, 245, 240, 0), #f8f5f0);
+}
+
+/* 功能卡片网格 */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    margin-top: 20px;
+}
+
+/* 功能卡片 */
+.dashboard-card {
+    background: #fff9f0;
+    border-radius: 20px;
+    padding: 35px 28px;
+    text-align: center;
+    border: 1px solid #e6d7c3;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 40px rgba(139, 0, 0, 0.12);
+    border-color: #8B0000;
+}
+
+.dashboard-card-icon {
+    font-size: 44px;
+    margin-bottom: 18px;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(139, 0, 0, 0.08), rgba(160, 82, 45, 0.08));
+    border-radius: 50%;
+    border: 2px solid rgba(139, 0, 0, 0.15);
+    transition: all 0.3s ease;
+}
+
+.dashboard-card:hover .dashboard-card-icon {
+    transform: scale(1.1);
+    background: linear-gradient(135deg, rgba(139, 0, 0, 0.15), rgba(160, 82, 45, 0.15));
+    border-color: rgba(139, 0, 0, 0.3);
+}
+
+.dashboard-card h3 {
+    font-size: 22px;
+    font-family: 'STKaiti', 'SimSun', serif;
+    color: #8B0000;
+    margin-bottom: 12px;
+    letter-spacing: 2px;
+    border: none;
+    background: none;
+    padding: 0;
+    margin-top: 0;
+}
+
+.dashboard-card p {
+    color: #666;
+    line-height: 1.8;
+    font-size: 15px;
+    margin-bottom: 22px;
+    flex-grow: 1;
+}
+
+.dashboard-card button {
+    padding: 12px 32px;
+    font-size: 16px;
+    border-radius: 50px;
+    letter-spacing: 2px;
+}
+
+/* 管理员卡片特殊样式 */
+.admin-card {
+    border-color: rgba(255, 215, 0, 0.4);
+    background: linear-gradient(135deg, #fff9f0, rgba(255, 215, 0, 0.05));
+}
+
+.admin-card:hover {
+    border-color: #FFD700;
+    box-shadow: 0 15px 40px rgba(255, 215, 0, 0.15);
+}
+
+.admin-card .dashboard-card-icon {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(160, 82, 45, 0.1));
+    border-color: rgba(255, 215, 0, 0.3);
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+    .dashboard-hero {
+        padding: 40px 20px 35px;
+    }
+    .dashboard-hero-greeting {
+        font-size: 24px;
+        letter-spacing: 3px;
+    }
+    .dashboard-hero-sub {
+        font-size: 14px;
+    }
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    .dashboard-card {
+        padding: 28px 22px;
+    }
 }

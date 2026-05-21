@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>首页 - 书法课报名签到系统</title>
+    <title>首页 - 墨香书院</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </head>
 <body>
     <div class="header">
         <div class="header-content">
-            <div class="logo">书法课报名签到系统</div>
+            <div class="logo">墨香书院</div>
             <div class="nav">
                 <a href="{{ url_for('index') }}">首页</a>
                 <a href="{{ url_for('courses') }}">课程列表</a>
@@ -26,50 +26,64 @@
             </div>
         </div>
     </div>
-    <div class="container">
-        <h1>欢迎使用书法课报名签到系统</h1>
-        <div class="welcome">
-            您好，{{ user['name'] }}！欢迎回到系统。
+
+    <!-- 个人欢迎横幅 -->
+    <div class="dashboard-hero">
+        <div class="dashboard-hero-content">
+            <div class="dashboard-hero-greeting">欢迎回来，{{ user['name'] }}</div>
+            <div class="dashboard-hero-sub">墨香书院 · 书法课程管理系统</div>
         </div>
-        <div class="feature-section">
-            <div class="collapsible">
-                <div class="collapsible-header">
-                    <h3>报名系统</h3>
-                    <button class="collapse-btn"></button>
-                </div>
-                <div class="collapsible-content active">
-                    <p>您可以在网站上浏览并报名书法课程，选择适合您的时间段，完成缴费后即可查看课程安排。</p>
-                    <div class="course-action">
-                        <a href="{{ url_for('courses') }}"><button>立即报名</button></a>
-                    </div>
-                </div>
+    </div>
+
+    <div class="container">
+        <h1>功能导航</h1>
+
+        <div class="dashboard-grid">
+            <!-- 报名系统 -->
+            <div class="dashboard-card">
+                <div class="dashboard-card-icon">📚</div>
+                <h3>课程报名</h3>
+                <p>浏览书法课程体系，选择适合您或孩子的课程时段，完成在线报名与缴费。</p>
+                <a href="{{ url_for('courses') }}"><button>立即报名</button></a>
             </div>
-            <div class="collapsible">
-                <div class="collapsible-header">
-                    <h3>签到系统</h3>
-                    <button class="collapse-btn"></button>
-                </div>
-                <div class="collapsible-content active">
-                    <p>每次上课前，管理员会进行点名，记录您的出勤情况。您可以在用户中心查看自己的考勤记录。</p>
-                    {% if session['role'] == 'admin' %}
-                    <div class="course-action">
-                        <a href="{{ url_for('admin') }}"><button>管理签到</button></a>
-                    </div>
-                    {% endif %}
-                </div>
+
+            <!-- 签到系统 -->
+            <div class="dashboard-card">
+                <div class="dashboard-card-icon">✅</div>
+                <h3>考勤签到</h3>
+                <p>查看个人出勤记录与课时进度。管理员可在此进行课堂点名与签到管理。</p>
+                {% if session['role'] == 'admin' %}
+                <a href="{{ url_for('admin') }}"><button>管理签到</button></a>
+                {% else %}
+                <a href="{{ url_for('user_center') }}"><button>查看考勤</button></a>
+                {% endif %}
             </div>
-            <div class="collapsible">
-                <div class="collapsible-header">
-                    <h3>消息中心</h3>
-                    <button class="collapse-btn"></button>
-                </div>
-                <div class="collapsible-content active">
-                    <p>您可以与管理员进行沟通，申请调课或咨询其他问题。</p>
-                    <div class="course-action">
-                        <a href="{{ url_for('messages') }}"><button>查看消息</button></a>
-                    </div>
-                </div>
+
+            <!-- 消息中心 -->
+            <div class="dashboard-card">
+                <div class="dashboard-card-icon">💬</div>
+                <h3>消息沟通</h3>
+                <p>与管理员实时沟通，咨询课程问题、申请调课或反馈学习情况。</p>
+                <a href="{{ url_for('messages') }}"><button>查看消息</button></a>
             </div>
+
+            <!-- 用户中心 -->
+            <div class="dashboard-card">
+                <div class="dashboard-card-icon">👤</div>
+                <h3>个人中心</h3>
+                <p>管理个人信息、修改密码、查看报名记录与课程安排。</p>
+                <a href="{{ url_for('user_center') }}"><button>进入中心</button></a>
+            </div>
+
+            <!-- 管理员专属 -->
+            {% if session['role'] == 'admin' %}
+            <div class="dashboard-card admin-card">
+                <div class="dashboard-card-icon">⚙️</div>
+                <h3>管理员后台</h3>
+                <p>课程管理、学员管理、课时统计、签到记录查看等高级功能。</p>
+                <a href="{{ url_for('admin') }}"><button>进入后台</button></a>
+            </div>
+            {% endif %}
         </div>
     </div>
 </body>

@@ -293,13 +293,13 @@ def init_admin():
 # 路由：首页
 @app.route('/')
 def index():
-    """系统首页路由，已登录用户展示个人信息，未登录跳转登录页。"""
+    """系统首页路由，已登录用户展示个人信息，未登录展示课程宣传页。"""
     if 'user_id' in session:
         conn = get_db_connection()
         user = conn.execute('SELECT * FROM users WHERE id = ?', (session['user_id'],)).fetchone()
         conn.close()
         return render_template('index.html', user=user)
-    return redirect(url_for('login'))
+    return render_template('landing.html')
 
 # 路由：登录
 @app.route('/login', methods=['GET', 'POST'])
@@ -616,6 +616,9 @@ def courses():
 @app.route('/course/<int:course_id>')
 def course_detail(course_id):
     """课程详情路由，管理员可见全部及报名学生，普通用户仅见未满课程。"""
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
     conn = get_db_connection()
     # 对于管理员，显示所有课程（包括已满的）
     if 'role' in session and session['role'] == 'admin':

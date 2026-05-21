@@ -3,462 +3,684 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>墨香书院 - 书法培训班</title>
+    <title>墨香书院 - 书法课程报名</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <style>
-        /* 宣传页专用样式 */
-        .landing-page {
-            min-height: 100vh;
-            background: #f8f5f0;
+        :root {
+            --ink: #171717;
+            --paper: #f6f0e4;
+            --paper-deep: #e8dcc7;
+            --cinnabar: #a92721;
+            --jade: #356859;
+            --gold: #c7a13a;
+            --mist: #dfe7e1;
         }
-        
-        /* 英雄区 */
-        .hero {
-            background: linear-gradient(135deg, #8B0000 0%, #A0522D 50%, #8B0000 100%);
-            color: #FFD700;
-            padding: 100px 30px 120px;
-            text-align: center;
+
+        body.landing-page {
+            background: var(--paper);
+            color: var(--ink);
+            font-family: "Microsoft YaHei", "SimSun", serif;
+        }
+
+        .landing-header {
+            position: fixed;
+            inset: 0 0 auto 0;
+            z-index: 20;
+            background: rgba(18, 18, 18, 0.72);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(12px);
+        }
+
+        .landing-header-inner {
+            max-width: 1180px;
+            margin: 0 auto;
+            min-height: 72px;
+            padding: 0 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+        }
+
+        .landing-brand {
+            color: #fff;
+            font-family: "STXingkai", "KaiTi", "SimSun", serif;
+            font-size: 30px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .landing-nav {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .landing-nav a {
+            display: inline-flex;
+            align-items: center;
+            min-height: 40px;
+            color: rgba(255, 255, 255, 0.86);
+            text-decoration: none;
+            padding: 9px 12px;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        .landing-nav a:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .landing-login-link {
+            border: 1px solid rgba(255, 255, 255, 0.36);
+        }
+
+        .landing-hero {
+            min-height: 92vh;
             position: relative;
+            display: flex;
+            align-items: center;
+            background-image:
+                linear-gradient(90deg, rgba(10, 10, 10, 0.82), rgba(10, 10, 10, 0.50) 48%, rgba(10, 10, 10, 0.18)),
+                url("{{ url_for('static', filename='images/real-calligraphy-gallery-2.jpg') }}");
+            background-size: cover;
+            background-position: center;
             overflow: hidden;
         }
-        
-        .hero::before {
-            content: '';
+
+        .landing-hero::after {
+            content: "";
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-            opacity: 0.5;
+            inset: auto 0 0 0;
+            height: 120px;
+            background: linear-gradient(180deg, rgba(246, 240, 228, 0), var(--paper));
         }
-        
+
         .hero-content {
             position: relative;
             z-index: 1;
-            max-width: 900px;
+            width: min(1180px, calc(100% - 48px));
             margin: 0 auto;
-            animation: fadeInUp 1s ease-out;
+            padding-top: 76px;
         }
-        
-        .hero h1 {
-            font-size: 56px;
-            font-family: 'STXingkai', 'SimSun', serif;
-            letter-spacing: 8px;
-            margin-bottom: 20px;
-            text-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        }
-        
-        .hero .subtitle {
-            font-size: 22px;
-            font-family: 'STKaiti', 'SimSun', serif;
+
+        .hero-kicker {
+            color: var(--gold);
+            font-size: 18px;
             letter-spacing: 4px;
-            margin-bottom: 50px;
-            opacity: 0.95;
+            margin-bottom: 16px;
         }
-        
-        .hero-buttons {
+
+        .hero-content h1 {
+            max-width: 1100px;
+            color: #fff;
+            font-family: "STXingkai", "KaiTi", "SimSun", serif;
+            font-size: clamp(56px, 10vw, 120px);
+            line-height: 1.5;
+            letter-spacing: 10px;
+            margin: 0 0 22px;
+            text-shadow: 0 12px 38px rgba(0, 0, 0, 0.55);
             display: flex;
-            gap: 25px;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+        }
+        .hero-content h1::before { display: none; }
+
+        .hero-line {
+            display: block;
+        }
+        .hero-line-top {
+            font-size: 0.72em;
+            opacity: 0.88;
+            margin-bottom: 0.15em;
+            letter-spacing: 8px;
+        }
+        .hero-line-bottom {
+            font-size: 1em;
+            font-weight: bold;
+            letter-spacing: 12px;
+            text-shadow: 0 16px 48px rgba(0, 0, 0, 0.6);
+        }
+
+        .hero-copy {
+            max-width: 620px;
+            color: rgba(255, 255, 255, 0.88);
+            font-size: 20px;
+            line-height: 1.9;
+            margin-bottom: 34px;
+        }
+
+        .hero-actions,
+        .section-actions {
+            display: flex;
+            gap: 14px;
             flex-wrap: wrap;
         }
-        
-        .hero-buttons a {
+
+        .landing-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 48px;
+            padding: 0 24px;
+            border-radius: 6px;
             text-decoration: none;
-        }
-        
-        .hero-buttons .btn-primary {
-            padding: 18px 50px;
-            font-size: 20px;
-            background-color: #FFD700;
-            color: #8B0000;
-            border: 2px solid #FFD700;
-            border-radius: 50px;
             font-weight: 700;
-            cursor: pointer;
-            font-family: 'STKaiti', 'SimSun', serif;
-            letter-spacing: 3px;
-            transition: all 0.3s ease;
-            display: inline-block;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            letter-spacing: 1px;
+            border: 1px solid transparent;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
         }
-        
-        .hero-buttons .btn-primary:hover {
-            transform: translateY(-4px) scale(1.05);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-            background-color: #FFF8DC;
+
+        .landing-btn:hover {
+            transform: translateY(-2px);
         }
-        
-        .hero-buttons .btn-outline {
-            padding: 18px 50px;
-            font-size: 20px;
-            background-color: transparent;
-            color: #FFD700;
-            border: 2px solid #FFD700;
-            border-radius: 50px;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: 'STKaiti', 'SimSun', serif;
-            letter-spacing: 3px;
-            transition: all 0.3s ease;
-            display: inline-block;
+
+        .landing-btn.primary {
+            color: #fff;
+            background: var(--cinnabar);
+            box-shadow: 0 14px 32px rgba(169, 39, 33, 0.32);
         }
-        
-        .hero-buttons .btn-outline:hover {
-            background-color: rgba(255, 215, 0, 0.15);
-            transform: translateY(-4px);
+
+        .landing-btn.secondary {
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.45);
+            background: rgba(255, 255, 255, 0.08);
         }
-        
-        /* 波浪分隔 */
-        .wave-divider {
+
+        .hero-scroll-hint {
             position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            overflow: hidden;
-            line-height: 0;
+            z-index: 2;
+            left: 50%;
+            bottom: 22px;
+            transform: translateX(-50%);
+            color: rgba(23, 23, 23, 0.78);
+            font-size: 13px;
+            letter-spacing: 2px;
         }
-        
-        .wave-divider svg {
-            display: block;
-            width: calc(100% + 1.3px);
-            height: 80px;
+
+        .landing-section {
+            padding: 82px 24px;
         }
-        
-        /* 特色介绍区 */
-        .features {
-            padding: 80px 30px;
-            max-width: 1200px;
+
+        .section-inner {
+            width: min(1180px, 100%);
             margin: 0 auto;
         }
-        
-        .section-title {
-            text-align: center;
-            font-size: 36px;
-            font-family: 'STXingkai', 'SimSun', serif;
-            color: #8B0000;
-            letter-spacing: 6px;
-            margin-bottom: 60px;
+
+        .section-heading {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(260px, 420px);
+            gap: 42px;
+            align-items: end;
+            margin-bottom: 34px;
+        }
+
+        .section-heading h2 {
+            font-family: "STXingkai", "KaiTi", "SimSun", serif;
+            font-size: clamp(38px, 6vw, 72px);
+            line-height: 1.05;
+            color: var(--ink);
+            margin: 0;
+        }
+
+        .section-heading p {
+            color: #4d4a45;
+            font-size: 17px;
+            line-height: 1.9;
+            margin: 0;
+        }
+
+        .art-gallery {
+            display: grid;
+            grid-template-columns: 1.2fr 0.9fr 0.9fr;
+            grid-auto-rows: 260px;
+            gap: 18px;
+        }
+
+        .art-piece {
             position: relative;
-        }
-        
-        .section-title::after {
-            content: '';
-            display: block;
-            width: 80px;
-            height: 3px;
-            background: linear-gradient(90deg, transparent, #8B0000, transparent);
-            margin: 15px auto 0;
-        }
-        
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 35px;
-        }
-        
-        .feature-card {
-            background: #fff9f0;
-            border-radius: 20px;
-            padding: 40px 30px;
-            text-align: center;
-            border: 1px solid #e6d7c3;
-            transition: all 0.4s ease;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-        }
-        
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 40px rgba(139, 0, 0, 0.15);
-            border-color: #8B0000;
-        }
-        
-        .feature-icon {
-            font-size: 48px;
-            margin-bottom: 20px;
-        }
-        
-        .feature-card h3 {
-            font-size: 22px;
-            font-family: 'STKaiti', 'SimSun', serif;
-            color: #8B0000;
-            margin-bottom: 15px;
-            letter-spacing: 2px;
-        }
-        
-        .feature-card p {
-            color: #666;
-            line-height: 1.8;
-            font-size: 15px;
-        }
-        
-        /* 课程展示 */
-        .courses-preview {
-            background: linear-gradient(180deg, #f8f5f0 0%, #fff9f0 100%);
-            padding: 80px 30px;
-        }
-        
-        .courses-container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        .course-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-bottom: 40px;
-        }
-        
-        .course-preview-card {
-            background: white;
-            border-radius: 16px;
             overflow: hidden;
-            border: 1px solid #e6d7c3;
-            transition: all 0.4s ease;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+            border-radius: 8px;
+            background: #ddd;
+            box-shadow: 0 18px 42px rgba(26, 22, 18, 0.16);
         }
-        
-        .course-preview-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+
+        .art-piece.large {
+            grid-row: span 2;
         }
-        
-        .course-preview-header {
-            background: linear-gradient(135deg, #8B0000, #A0522D);
-            color: #FFD700;
-            padding: 25px;
-            text-align: center;
+
+        .art-piece img {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
+            transition: transform 0.45s ease;
         }
-        
-        .course-preview-header h3 {
-            font-family: 'STKaiti', 'SimSun', serif;
-            font-size: 22px;
-            letter-spacing: 2px;
+
+        .art-piece:hover img {
+            transform: scale(1.045);
         }
-        
-        .course-preview-body {
-            padding: 25px;
-        }
-        
-        .course-preview-body p {
-            color: #666;
-            line-height: 1.8;
-            margin-bottom: 15px;
-            font-size: 15px;
-        }
-        
-        .course-preview-body .highlight {
-            color: #8B0000;
-            font-weight: 600;
-        }
-        
-        .course-preview-footer {
-            padding: 0 25px 25px;
-            text-align: center;
-        }
-        
-        /* 报名 CTA */
-        .cta-section {
-            background: linear-gradient(135deg, #8B0000, #A0522D);
-            color: #FFD700;
-            padding: 80px 30px;
-            text-align: center;
-        }
-        
-        .cta-section h2 {
-            font-size: 36px;
-            font-family: 'STXingkai', 'SimSun', serif;
-            letter-spacing: 5px;
-            margin-bottom: 20px;
-        }
-        
-        .cta-section p {
-            font-size: 18px;
-            font-family: 'STKaiti', 'SimSun', serif;
-            margin-bottom: 40px;
-            opacity: 0.95;
-        }
-        
-        .cta-section .btn-primary {
-            padding: 18px 60px;
-            font-size: 22px;
-            background-color: #FFD700;
-            color: #8B0000;
-            border: 2px solid #FFD700;
-            border-radius: 50px;
+
+        .art-caption {
+            position: absolute;
+            inset: auto 0 0 0;
+            padding: 18px;
+            color: #fff;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.72));
             font-weight: 700;
-            cursor: pointer;
-            font-family: 'STKaiti', 'SimSun', serif;
-            letter-spacing: 4px;
-            transition: all 0.3s ease;
-            display: inline-block;
-            text-decoration: none;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            letter-spacing: 1px;
         }
-        
-        .cta-section .btn-primary:hover {
-            transform: translateY(-4px) scale(1.05);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-            background-color: #FFF8DC;
+
+        .philosophy {
+            background: var(--ink);
+            color: #fff;
+            padding-top: 94px;
+            padding-bottom: 94px;
         }
-        
-        /* 页脚 */
-        .landing-footer {
-            background: #3d1f1f;
-            color: #e6d7c3;
-            padding: 40px 30px;
+
+        .philosophy .section-heading h2,
+        .philosophy .section-heading p {
+            color: #fff;
+        }
+
+        .feature-strip {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .feature-item {
+            min-height: 178px;
+            padding: 26px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.13);
+        }
+
+        .feature-item strong {
+            display: block;
+            color: var(--gold);
+            font-size: 28px;
+            margin-bottom: 14px;
+            font-family: "KaiTi", "SimSun", serif;
+        }
+
+        .feature-item span {
+            color: rgba(255, 255, 255, 0.78);
+            line-height: 1.8;
+        }
+
+        .course-showcase {
+            background: linear-gradient(180deg, var(--paper), #edf2ee);
+        }
+
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .course-card-promo {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border-radius: 8px;
+            background: #fffaf0;
+            box-shadow: 0 16px 36px rgba(33, 28, 22, 0.14);
+            border: 1px solid rgba(53, 104, 89, 0.18);
+        }
+
+        .course-card-promo img {
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            object-fit: cover;
+        }
+
+        .course-card-body {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            flex: 1;
+        }
+
+        .course-card-body h3 {
+            color: var(--jade);
+            font-size: 23px;
+            margin: 0;
+            font-family: "KaiTi", "SimSun", serif;
+        }
+
+        .course-card-body p {
+            margin: 0;
+            color: #4c4842;
+            line-height: 1.75;
+            flex: 1;
+        }
+
+        .course-meta {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .course-meta span {
+            background: var(--mist);
+            color: #23483d;
+            border-radius: 6px;
+            padding: 6px 9px;
+            font-size: 13px;
+        }
+
+        .course-card-body .landing-btn {
+            align-self: flex-start;
+            min-height: 42px;
+            color: #fff;
+            background: var(--jade);
+        }
+
+        .studio-band {
+            padding: 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 560px;
+            background: var(--paper-deep);
+        }
+
+        .studio-band img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            min-height: 420px;
+        }
+
+        .studio-copy {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: clamp(40px, 7vw, 86px);
+        }
+
+        .studio-copy h2 {
+            font-family: "STXingkai", "KaiTi", "SimSun", serif;
+            font-size: clamp(42px, 6vw, 76px);
+            line-height: 1.08;
+            margin: 0 0 22px;
+        }
+
+        .studio-copy p {
+            color: #48433a;
+            line-height: 1.9;
+            font-size: 18px;
+            margin: 0 0 28px;
+        }
+
+        .studio-copy .landing-btn {
+            align-self: flex-start;
+        }
+
+        .final-cta {
+            background-image:
+                linear-gradient(90deg, rgba(16, 16, 16, 0.90), rgba(16, 16, 16, 0.66)),
+                url("{{ url_for('static', filename='images/real-calligraphy-gallery-5.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            color: #fff;
             text-align: center;
+            padding: 92px 24px;
         }
-        
-        .landing-footer p {
+
+        .final-cta h2 {
+            font-family: "STXingkai", "KaiTi", "SimSun", serif;
+            font-size: clamp(42px, 7vw, 82px);
+            margin: 0 0 18px;
+        }
+
+        .final-cta p {
+            margin: 0 auto 30px;
+            max-width: 660px;
+            color: rgba(255, 255, 255, 0.82);
+            font-size: 18px;
+            line-height: 1.9;
+        }
+
+        .landing-footer {
+            background: #111;
+            color: rgba(255, 255, 255, 0.62);
+            padding: 28px 24px;
+            text-align: center;
             font-size: 14px;
-            line-height: 2;
-            font-family: 'STKaiti', 'SimSun', serif;
         }
-        
-        /* 响应式 */
-        @media (max-width: 768px) {
-            .hero h1 { font-size: 32px; letter-spacing: 4px; }
-            .hero .subtitle { font-size: 16px; }
-            .hero-buttons { flex-direction: column; align-items: center; }
-            .hero-buttons .btn-primary,
-            .hero-buttons .btn-outline { width: 80%; max-width: 300px; }
-            .section-title { font-size: 26px; }
-            .cta-section h2 { font-size: 26px; }
+
+        @media (max-width: 900px) {
+            .landing-header-inner {
+                min-height: auto;
+                padding: 14px 18px;
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .landing-nav {
+                justify-content: flex-start;
+            }
+
+            .landing-hero {
+                min-height: 88vh;
+                align-items: flex-end;
+                padding-bottom: 80px;
+                background-image:
+                    linear-gradient(180deg, rgba(10, 10, 10, 0.32), rgba(10, 10, 10, 0.88)),
+                    url("{{ url_for('static', filename='images/real-calligraphy-gallery-2.jpg') }}");
+            }
+
+            .hero-content {
+                padding-top: 150px;
+            }
+
+            .hero-copy {
+                font-size: 17px;
+            }
+
+            .section-heading,
+            .studio-band {
+                grid-template-columns: 1fr;
+            }
+
+            .art-gallery,
+            .course-grid,
+            .feature-strip {
+                grid-template-columns: 1fr;
+            }
+
+            .art-piece,
+            .art-piece.large {
+                grid-row: span 1;
+                min-height: 320px;
+            }
         }
-        
-        /* 导航栏在宣传页的微调 */
-        .landing-nav .nav a {
-            color: #FFD700;
+
+        @media (max-width: 560px) {
+            .landing-nav a {
+                padding: 7px 8px;
+                font-size: 14px;
+            }
+
+            .hero-actions,
+            .section-actions {
+                flex-direction: column;
+            }
+
+            .landing-btn {
+                width: 100%;
+            }
+
+            .landing-section {
+                padding: 58px 18px;
+            }
         }
     </style>
 </head>
 <body class="landing-page">
-    <!-- 头部导航 -->
-    <div class="header">
-        <div class="header-content">
-            <div class="logo">墨香书院</div>
-            <div class="nav">
-                <a href="{{ url_for('index') }}">首页</a>
-                <a href="#features">课程特色</a>
-                <a href="#courses">课程介绍</a>
-                <a href="{{ url_for('login') }}">登录</a>
-                <a href="{{ url_for('register') }}">注册</a>
-            </div>
+    <header class="landing-header">
+        <div class="landing-header-inner">
+            <a class="landing-brand" href="{{ url_for('index') }}">墨香书院</a>
+            <nav class="landing-nav">
+                <a href="#gallery">作品</a>
+                <a href="#courses">课程</a>
+                <a href="#studio">课堂</a>
+                <a class="landing-login-link" href="{{ url_for('login') }}">登录报名</a>
+            </nav>
         </div>
-    </div>
-    
-    <!-- 英雄区 -->
-    <section class="hero">
-        <div class="hero-content">
-            <h1>墨香书院</h1>
-            <p class="subtitle">传承千年翰墨 · 启迪心灵之美</p>
-            <div class="hero-buttons">
-                <a href="{{ url_for('register') }}" class="btn-primary">立即报名</a>
-                <a href="{{ url_for('login') }}" class="btn-outline">已有账号 · 登录</a>
-            </div>
-        </div>
-        <div class="wave-divider">
-            <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
-                <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" fill="#f8f5f0" opacity=".25"></path>
-                <path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" fill="#f8f5f0" opacity=".5"></path>
-                <path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z" fill="#f8f5f0"></path>
-            </svg>
-        </div>
-    </section>
-    
-    <!-- 课程特色 -->
-    <section class="features" id="features">
-        <h2 class="section-title">为什么选择墨香书院</h2>
-        <div class="feature-grid">
-            <div class="feature-card">
-                <div class="feature-icon">🖌️</div>
-                <h3>名师授课</h3>
-                <p>聘请省级书法家协会会员任教，拥有二十年书法教学经验，因材施教，让每位学员找到适合自己的书体。</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">📚</div>
-                <h3>系统课程</h3>
-                <p>从执笔姿势到临帖创作，科学设置楷书、行书、隶书等课程体系，循序渐进，扎实基本功。</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">👨‍👩‍👧</div>
-                <h3>小班教学</h3>
-                <p>每班限额15人，确保老师能关注到每位学员。支持家长实时查看考勤与课时，安心省心。</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">🏆</div>
-                <h3>成果展示</h3>
-                <p>定期举办学员作品展，优秀作品推荐参加省市书法比赛，让学员在展示中收获自信。</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">📱</div>
-                <h3>智能管理</h3>
-                <p>在线报名、签到打卡、消息通知一站式解决。家长随时掌握孩子学习动态，沟通零距离。</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">🎁</div>
-                <h3>体验免费</h3>
-                <p>新学员可免费体验一节试听课，感受书法魅力后再决定是否报名，零风险体验。</p>
-            </div>
-        </div>
-    </section>
-    
-    <!-- 课程介绍 -->
-    <section class="courses-preview" id="courses">
-        <div class="courses-container">
-            <h2 class="section-title">热门课程</h2>
-            <div class="course-list">
-                <div class="course-preview-card">
-                    <div class="course-preview-header">
-                        <h3>📝 硬笔书法基础班</h3>
-                    </div>
-                    <div class="course-preview-body">
-                        <p>适合 <span class="highlight">6-12岁</span> 青少年</p>
-                        <p>从正确的执笔姿势开始，学习基本笔画与结构规律。重点培养书写规范与速度，为日常作业书写打下坚实基础。</p>
-                    </div>
-                    <div class="course-preview-footer">
-                        <a href="{{ url_for('register') }}"><button>了解详情</button></a>
-                    </div>
+    </header>
+
+    <main>
+        <section class="landing-hero">
+            <div class="hero-content">
+                <div class="hero-kicker">书法课程 · 少儿与成人皆可学</div>
+                <h1>
+                    <span class="hero-line hero-line-top">把一笔一画，</span>
+                    <span class="hero-line hero-line-bottom" style="white-space: nowrap;">写进气质里</span>
+                </h1>
+                <p class="hero-copy">从执笔、运腕、结构到临帖创作，老师带你在纸墨之间建立专注力、审美力与稳定表达。这里不是匆忙练字，而是一场安静、有章法的书法修习。</p>
+                <div class="hero-actions">
+                    <a class="landing-btn primary" href="{{ url_for('login') }}">登录后报名</a>
+                    <a class="landing-btn secondary" href="{{ url_for('login') }}">查看课程详情</a>
                 </div>
-                <div class="course-preview-card">
-                    <div class="course-preview-header">
-                        <h3>🎨 毛笔书法入门班</h3>
-                    </div>
-                    <div class="course-preview-body">
-                        <p>适合 <span class="highlight">8岁以上</span> 学员</p>
-                        <p>以颜体楷书为入门，学习笔法、字法、章法三要素。配备优质文房四宝，在墨香中感受传统文化的魅力。</p>
-                    </div>
-                    <div class="course-preview-footer">
-                        <a href="{{ url_for('register') }}"><button>了解详情</button></a>
-                    </div>
+            </div>
+            <div class="hero-scroll-hint">下滑欣赏作品</div>
+        </section>
+
+        <section class="landing-section" id="gallery">
+            <div class="section-inner">
+                <div class="section-heading">
+                    <h2>先看见墨色，再走进课堂</h2>
+                    <p>课程以经典碑帖为根基，也重视学员自己的作品表达。每一张习作都记录着控笔、观察和心性的变化。</p>
                 </div>
-                <div class="course-preview-card">
-                    <div class="course-preview-header">
-                        <h3>✨ 行书提高班</h3>
+                <div class="art-gallery">
+                    <figure class="art-piece large">
+                        <img src="{{ url_for('static', filename='images/real-calligraphy-hero.jpg') }}" alt="古帖行草书法作品">
+                        <figcaption class="art-caption">古帖风骨 · 行笔与章法</figcaption>
+                    </figure>
+                    <figure class="art-piece">
+                        <img src="{{ url_for('static', filename='images/real-calligraphy-gallery-1.jpg') }}" alt="行书碑帖书法作品">
+                        <figcaption class="art-caption">心手相应 · 临帖专注力</figcaption>
+                    </figure>
+                    <figure class="art-piece">
+                        <img src="{{ url_for('static', filename='images/real-calligraphy-gallery-3.jpg') }}" alt="竖幅行草书法作品">
+                        <figcaption class="art-caption">行笔节奏 · 墨色层次</figcaption>
+                    </figure>
+                    <figure class="art-piece">
+                        <img src="{{ url_for('static', filename='images/real-calligraphy-gallery-4.jpg') }}" alt="竖幅书法局部作品">
+                        <figcaption class="art-caption">章法布局 · 作品成幅</figcaption>
+                    </figure>
+                    <figure class="art-piece">
+                        <img src="{{ url_for('static', filename='images/real-calligraphy-gallery-5.jpg') }}" alt="小楷书法作品">
+                        <figcaption class="art-caption">小楷格线 · 训练稳定控笔</figcaption>
+                    </figure>
+                </div>
+            </div>
+        </section>
+
+        <section class="landing-section philosophy">
+            <div class="section-inner">
+                <div class="section-heading">
+                    <h2>课程不只教漂亮字</h2>
+                    <p>我们把书法拆成看得懂、练得稳、能坚持的学习路径。孩子练规范，成人练松弛，基础薄弱也能跟上。</p>
+                </div>
+                <div class="feature-strip">
+                    <div class="feature-item">
+                        <strong>一</strong>
+                        <span>小班授课，老师逐字点评，及时纠正执笔、坐姿和笔画方向。</span>
                     </div>
-                    <div class="course-preview-body">
-                        <p>适合 <span class="highlight">有楷书基础</span> 的学员</p>
-                        <p>以《兰亭序》《圣教序》为临习范本，学习行书连笔技巧与章法布局。适合有一定基础、希望提升创作能力的学员。</p>
+                    <div class="feature-item">
+                        <strong>二</strong>
+                        <span>从基本笔画到作品创作，按阶段推进，不靠临时热情硬撑。</span>
                     </div>
-                    <div class="course-preview-footer">
-                        <a href="{{ url_for('register') }}"><button>了解详情</button></a>
+                    <div class="feature-item">
+                        <strong>三</strong>
+                        <span>每期保留作品档案，看得见线条、结构和章法的成长。</span>
+                    </div>
+                    <div class="feature-item">
+                        <strong>四</strong>
+                        <span>线上报名、签到与消息沟通统一管理，家长查看进度更省心。</span>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
-    
-    <!-- 报名号召 -->
-    <section class="cta-section">
-        <h2>挥毫落纸，从这里开始</h2>
-        <p>立即注册，开启您的书法学习之旅</p>
-        <a href="{{ url_for('register') }}" class="btn-primary">立即报名</a>
-    </section>
-    
-    <!-- 页脚 -->
+        </section>
+
+        <section class="landing-section course-showcase" id="courses">
+            <div class="section-inner">
+                <div class="section-heading">
+                    <h2>选择适合你的书法班</h2>
+                    <p>从硬笔规范到毛笔创作，从零基础到进阶临帖，课程围绕真实学习目标设计。</p>
+                </div>
+                <div class="course-grid">
+                    <article class="course-card-promo">
+                        <img src="{{ url_for('static', filename='images/real-calligraphy-hero.jpg') }}" alt="硬笔书法课程参考作品">
+                        <div class="course-card-body">
+                            <div class="course-meta">
+                                <span>6-12岁</span>
+                                <span>书写规范</span>
+                            </div>
+                            <h3>硬笔书法基础班</h3>
+                            <p>纠正握笔与坐姿，学习笔画、偏旁和间架结构，让日常作业字迹更清楚、更稳定。</p>
+                            <a class="landing-btn" href="{{ url_for('login') }}">查看详情</a>
+                        </div>
+                    </article>
+                    <article class="course-card-promo">
+                        <img src="{{ url_for('static', filename='images/real-calligraphy-gallery-5.jpg') }}" alt="毛笔书法入门课程参考作品">
+                        <div class="course-card-body">
+                            <div class="course-meta">
+                                <span>8岁以上</span>
+                                <span>毛笔入门</span>
+                            </div>
+                            <h3>毛笔书法入门班</h3>
+                            <p>从文房四宝、蘸墨控水到楷书基本笔法，带学员理解线条的轻重、提按和转折。</p>
+                            <a class="landing-btn" href="{{ url_for('login') }}">查看详情</a>
+                        </div>
+                    </article>
+                    <article class="course-card-promo">
+                        <img src="{{ url_for('static', filename='images/real-calligraphy-gallery-3.jpg') }}" alt="行书提高课程参考作品">
+                        <div class="course-card-body">
+                            <div class="course-meta">
+                                <span>有基础</span>
+                                <span>临帖创作</span>
+                            </div>
+                            <h3>行书提高班</h3>
+                            <p>以经典法帖为线索，训练连带、节奏和章法，把单字练习推进到完整作品表达。</p>
+                            <a class="landing-btn" href="{{ url_for('login') }}">查看详情</a>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="studio-band" id="studio">
+            <img src="{{ url_for('static', filename='images/real-calligraphy-studio.jpg') }}" alt="小楷书法作品展示">
+            <div class="studio-copy">
+                <h2>在安静的课堂里，把字写稳</h2>
+                <p>每节课都有示范、临摹、点评和复盘。老师关注每位学员的笔路习惯，也帮助家长看懂孩子的进步在哪里。</p>
+                <div class="section-actions">
+                    <a class="landing-btn primary" href="{{ url_for('login') }}">预约试听</a>
+                    <a class="landing-btn primary" href="{{ url_for('login') }}">报名课程</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="final-cta">
+            <h2>从今天起，让书写有风骨</h2>
+            <p>登录后即可查看课程名额、时间安排与报名信息。所有课程详情与报名操作都会在登录后继续完成。</p>
+            <a class="landing-btn primary" href="{{ url_for('login') }}">登录查看详情</a>
+        </section>
+    </main>
+
     <footer class="landing-footer">
-        <p>墨香书院 · 书法培训班报名签到系统</p>
-        <p>传承中华文化 · 书写精彩人生</p>
+        墨香书院 · 书法课程报名签到系统
     </footer>
 </body>
 </html>
