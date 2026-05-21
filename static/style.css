@@ -1694,9 +1694,10 @@ a:hover::after {
 }
 
 .collapsible-content.active {
-    max-height: 1000px;
+    max-height: 2000px;
     padding: 20px;
     margin-top: -1px;
+    overflow: visible;
 }
 
 .collapse-btn {
