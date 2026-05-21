@@ -27,7 +27,7 @@ pip install PyMySQL==1.0.2
 2. 在首页启动 **MySQL** 服务（默认端口 3306）
 3. 确认 MySQL 状态为 **运行中**
 
-> phpStudy 默认账号密码通常为 `root` / `root`，如已修改请使用实际密码。
+> phpStudy 默认账号密码请查看 phpStudy 面板中的数据库配置，如已修改请使用实际密码。
 
 ---
 
@@ -51,7 +51,7 @@ pip install PyMySQL==1.0.2
    - 主机：`localhost`（或 `127.0.0.1`）
    - 端口：`3306`
    - 用户名：`root`
-   - 密码：`root`（phpStudy默认密码）
+   - 密码：phpStudy 面板中显示的数据库密码
 3. 点击 **测试连接**，提示成功后点击 **确定**
 
 ### 步骤3：在 MySQL 中创建数据库
@@ -102,7 +102,7 @@ pip install PyMySQL==1.0.2
 
 ```bash
 # 1. 确保 MySQL 已启动，且已创建数据库和表
-# 2. 修改脚本中的 MySQL 密码（如不是 root/root）
+# 2. 修改脚本中的 MySQL 密码（根据 phpStudy 面板中的实际密码修改）
 # 3. 运行脚本
 python migrate_to_mysql.py
 ```
@@ -125,7 +125,7 @@ $env:USE_MYSQL = "true"
 $env:MYSQL_HOST = "localhost"
 $env:MYSQL_PORT = "3306"
 $env:MYSQL_USER = "root"
-$env:MYSQL_PASSWORD = "root"
+$env:MYSQL_PASSWORD = "你的实际密码"
 $env:MYSQL_DATABASE = "calligraphy_system"
 python run.py
 
@@ -134,7 +134,7 @@ set USE_MYSQL=true
 set MYSQL_HOST=localhost
 set MYSQL_PORT=3306
 set MYSQL_USER=root
-set MYSQL_PASSWORD=root
+set MYSQL_PASSWORD=你的实际密码
 set MYSQL_DATABASE=calligraphy_system
 python run.py
 ```
@@ -161,7 +161,7 @@ MYSQL_CONFIG = {
 ## 11.6 验证迁移结果
 
 1. 启动应用连接 MySQL
-2. 使用管理员账号 `admin` / `admin123` 登录
+2. 使用管理员账号 `admin` / 随机密码 登录（见控制台输出）
 3. 检查课程列表、学生列表是否正常显示
 4. 测试报名、签到功能是否正常
 
@@ -176,3 +176,59 @@ MYSQL_CONFIG = {
 | 字符乱码 | 字符集不匹配 | 确保 MySQL 数据库字符集为 utf8mb4 |
 | 外键约束报错 | 数据导入顺序问题 | 先导入 users/courses，再导入 enrollments |
 | 自增 ID 冲突 | 迁移后新插入数据 ID 重复 | 运行 `ALTER TABLE 表名 AUTO_INCREMENT = 最大ID+1` |
+
+---
+
+## 11.8 Docker 部署
+
+### 构建镜像
+
+```bash
+docker build -t calligraphy-system .
+```
+
+### 运行容器
+
+```bash
+# SQLite 模式（本地开发）
+docker run -d -p 5000:5000 --name calligraphy calligraphy-system
+
+# MySQL 模式（生产环境）
+docker run -d -p 5000:5000 \
+  -e USE_MYSQL=true \
+  -e MYSQL_HOST=host.docker.internal \
+  -e MYSQL_PASSWORD=你的密码 \
+  --name calligraphy calligraphy-system
+```
+
+---
+
+## 11.9 PaaS 平台部署（Railway / Render）
+
+### Railway 部署
+
+1. 访问 https://railway.app/，使用 GitHub 账号登录
+2. 点击 **New Project** → **Deploy from GitHub repo**
+3. 选择 `hhzxwjj/-` 仓库
+4. 添加环境变量：
+   - `SECRET_KEY`：随机字符串
+   - `ADMIN_DEFAULT_PASSWORD`：管理员密码
+5. Railway 会自动检测 `Dockerfile` 并构建部署
+
+### Render 部署
+
+1. 访问 https://render.com/，使用 GitHub 账号登录
+2. 点击 **New** → **Web Service**
+3. 连接 GitHub 仓库
+4. 运行时选择 **Docker**
+5. 添加环境变量后部署
+
+---
+
+## 11.10 静态资源托管（Netlify / Vercel）
+
+> 注：本项目采用前后端不分离的 Flask 模板渲染架构，静态文件由 Flask 直接托管。如需前后端分离部署，需将前端部分独立为 Vue/React 项目。
+
+如需单独托管前端静态资源（演示场景）：
+- **Netlify**：拖拽 `static/` + `templates/` 目录部署
+- **Vercel**：使用 `vercel.json` 配置静态托管

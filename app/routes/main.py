@@ -249,7 +249,21 @@ def get_captcha():
 
 # 初始化管理员账户
 def init_admin():
-    """初始化默认管理员账号（admin/admin123），不存在则创建，密码格式旧则升级。"""
+    """初始化默认管理员账号，不存在则创建，密码格式旧则升级。
+    默认密码优先从环境变量 ADMIN_DEFAULT_PASSWORD 读取，未设置则自动生成随机密码并打印到控制台。"""
+    import os
+    default_password = os.environ.get('ADMIN_DEFAULT_PASSWORD')
+    if not default_password:
+        # 未配置环境变量时自动生成12位随机密码
+        characters = string.ascii_letters + string.digits + "!@#$%^&*"
+        default_password = ''.join(secrets.choice(characters) for _ in range(12))
+        print('=' * 60)
+        print('[安全提示] 管理员默认密码未配置，已生成随机密码：')
+        print(f'  用户名：admin')
+        print(f'  密码：{default_password}')
+        print('  请妥善保存，或通过环境变量 ADMIN_DEFAULT_PASSWORD 配置固定密码')
+        print('=' * 60)
+    
     conn = get_db_connection()
     cursor = conn.cursor()
     # 检查是否已有管理员账户
@@ -260,18 +274,18 @@ def init_admin():
         cursor.execute('''
         INSERT INTO users (username, password, name, phone, email, child_name, role)
         VALUES (?, ?, ?, ?, ?, ?, ?)
-        ''', ('admin', hash_password('admin123'), '管理员', '13800138000', 'admin@example.com', '管理员', 'admin'))
+        ''', ('admin', hash_password(default_password), '管理员', '13800138000', 'admin@example.com', '管理员', 'admin'))
         conn.commit()
     else:
         # 如果现有管理员密码无法通过当前算法验证，则更新密码
         # 这通常发生在密码哈希算法升级后
         try:
-            if not verify_password('admin123', admin['password']):
-                cursor.execute('UPDATE users SET password = ? WHERE id = ?', (hash_password('admin123'), admin['id']))
+            if not verify_password(default_password, admin['password']):
+                cursor.execute('UPDATE users SET password = ? WHERE id = ?', (hash_password(default_password), admin['id']))
                 conn.commit()
                 print('管理员密码已更新为当前加密格式')
         except Exception:
-            cursor.execute('UPDATE users SET password = ? WHERE id = ?', (hash_password('admin123'), admin['id']))
+            cursor.execute('UPDATE users SET password = ? WHERE id = ?', (hash_password(default_password), admin['id']))
             conn.commit()
             print('管理员密码已更新为当前加密格式')
     conn.close()
