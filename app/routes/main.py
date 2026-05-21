@@ -853,6 +853,43 @@ def add_course():
     
     return redirect(url_for('admin'))
 
+@app.route('/admin/delete_course/<int:course_id>', methods=['POST'])
+def delete_course(course_id):
+    """管理员删除课程，并清理该课程关联的报名、签到和备选课程记录。"""
+    if 'user_id' not in session or session['role'] != 'admin':
+        return redirect(url_for('login'))
+
+    conn = get_db_connection()
+    course = conn.execute('SELECT * FROM courses WHERE id = ?', (course_id,)).fetchone()
+    if not course:
+        conn.close()
+        return redirect(url_for('admin'))
+
+    try:
+        conn.execute('BEGIN TRANSACTION')
+        conn.execute('''
+        DELETE FROM alternate_courses
+        WHERE course_id = ?
+           OR enrollment_id IN (
+               SELECT id FROM enrollments WHERE course_id = ?
+           )
+        ''', (course_id, course_id))
+        conn.execute('''
+        DELETE FROM attendances
+        WHERE enrollment_id IN (
+            SELECT id FROM enrollments WHERE course_id = ?
+        )
+        ''', (course_id,))
+        conn.execute('DELETE FROM enrollments WHERE course_id = ?', (course_id,))
+        conn.execute('DELETE FROM courses WHERE id = ?', (course_id,))
+        conn.commit()
+    except Exception:
+        conn.rollback()
+    finally:
+        conn.close()
+
+    return redirect(url_for('admin'))
+
 # 路由：课程详情（管理员）
 @app.route('/admin/course/<int:course_id>')
 def admin_course(course_id):

@@ -90,7 +90,9 @@
                         <div class="list-item-actions">
                             <a href="{{ url_for('admin_course', course_id=course['id']) }}"><button class="btn-secondary">查看详情</button></a>
                             <a href="{{ url_for('attendance', course_id=course['id']) }}"><button class="btn-success">签到</button></a>
-                            <button class="btn-danger">删除</button>
+                            <form method="post" action="{{ url_for('delete_course', course_id=course['id']) }}" style="display: inline;" data-course-name="{{ course['name'] }}" onsubmit="return confirmCourseDelete(this);">
+                                <button type="submit" class="btn-danger">删除</button>
+                            </form>
                         </div>
                     </div>
                     <div class="list-item-content">
@@ -104,5 +106,16 @@
             </div>
         </div>
     </div>
+    <script>
+        function confirmCourseDelete(form) {
+            const courseName = form.dataset.courseName || '该课程';
+            const firstConfirm = confirm(`确定要删除课程“${courseName}”吗？该课程的报名和签到记录也会一起删除。`);
+            if (!firstConfirm) {
+                return false;
+            }
+
+            return confirm(`请再次确认：删除课程“${courseName}”是无法挽回的操作，确定继续吗？`);
+        }
+    </script>
 </body>
 </html>

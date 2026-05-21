@@ -142,14 +142,54 @@
                 });
             }
             
+            // 显示提示气泡
+            function showToast(msg, type) {
+                const toast = document.createElement('div');
+                toast.style.cssText = `
+                    position:fixed;top:20px;left:50%;transform:translateX(-50%);
+                    padding:10px 20px;border-radius:6px;color:#fff;font-size:14px;
+                    z-index:9999;transition:opacity .3s;
+                    background:${type === 'success' ? '#28a745' : '#dc3545'};
+                `;
+                toast.textContent = msg;
+                document.body.appendChild(toast);
+                setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
+            }
+
             // 发送消息
             chatForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 
-                const content = document.getElementById('content').value;
+                const contentEl = document.getElementById('content');
+                const content = contentEl.value.trim();
                 const receiver = receiverId.value;
+                const btn = chatForm.querySelector('button[type="submit"]');
                 
-                if (!content || !receiver) return;
+                if (!receiver) {
+                    showToast('请先选择联系人', 'error');
+                    return;
+                }
+                if (!content) {
+                    showToast('消息内容不能为空', 'error');
+                    return;
+                }
+                
+                // 禁用按钮防止重复提交
+                btn.disabled = true;
+                btn.textContent = '发送中...';
+                
+                // 乐观更新：立即在本地显示消息
+                const tempDiv = document.createElement('div');
+                tempDiv.className = 'message sent';
+                const nowStr = new Date().toLocaleString('zh-CN', {hour12:false});
+                tempDiv.innerHTML = `
+                    <div class="message-content"></div>
+                    <div class="message-time">${nowStr}</div>
+                `;
+                tempDiv.querySelector('.message-content').textContent = content;
+                chatMessages.appendChild(tempDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                contentEl.value = '';
                 
                 // 发送消息
                 fetch('{{ url_for('send_message') }}', {
@@ -157,25 +197,32 @@
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
                     },
-                    body: `receiver_id=${receiver}&content=${encodeURIComponent(content)}`
+                    body: `receiver_id=${encodeURIComponent(receiver)}&content=${encodeURIComponent(content)}`
                 })
                 .then(response => response.json())
                 .then(data => {
+                    btn.disabled = false;
+                    btn.textContent = '发送';
                     if (data.success) {
-                        // 清空输入框
-                        document.getElementById('content').value = '';
-                        // 重新拉取真实历史，确保与数据库一致
+                        showToast('发送成功', 'success');
                         loadChatHistory(receiver);
+                    } else {
+                        showToast(data.message || '发送失败', 'error');
                     }
+                })
+                .catch(err => {
+                    btn.disabled = false;
+                    btn.textContent = '发送';
+                    showToast('网络错误，请重试', 'error');
+                    console.error('发送消息失败:', err);
                 });
             });
             
-            // 自动刷新消息
+            // 自动刷新消息（每5秒轮询）
             setInterval(() => {
                 const receiver = receiverId.value;
                 if (receiver) {
-                    // 实际项目中应该通过API获取新消息
-                    // 这里只是模拟
+                    loadChatHistory(receiver);
                 }
             }, 5000);
             
