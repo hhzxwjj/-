@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>管理员后台 - 书法课报名签到系统</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css', v=2) }}">
     <script src="{{ url_for('static', filename='script.js') }}"></script>
     <style>
         #add-course-panel { display: none; }
@@ -28,12 +28,18 @@
             </div>
         </div>
     </div>
+
+    <div class="page-hero">
+        <div class="page-hero-content">
+            <h1>管理员后台</h1>
+            <p>课程管理、学员管理、课时统计与签到记录查看</p>
+        </div>
+    </div>
+
     <div class="container">
-        <h1>管理员后台</h1>
-        
-        <div class="admin-nav" style="display: flex; gap: 15px; margin-bottom: 30px; padding: 20px; background-color: #f8f5f0; border-radius: 10px;">
-            <a href="{{ url_for('admin') }}"><button class="btn-secondary">课程管理</button></a>
-            <a href="{{ url_for('hours_management') }}"><button class="btn-success">课时管理</button></a>
+        <div class="admin-nav">
+            <a href="{{ url_for('admin') }}" class="active">课程管理</a>
+            <a href="{{ url_for('hours_management') }}">课时管理</a>
         </div>
         
         <!-- 添加课程 -->
@@ -109,12 +115,12 @@
     <script>
         function confirmCourseDelete(form) {
             const courseName = form.dataset.courseName || '该课程';
-            const firstConfirm = confirm(`确定要删除课程“${courseName}”吗？该课程的报名和签到记录也会一起删除。`);
+            const firstConfirm = confirm(`确定要删除课程"${courseName}"吗？该课程的报名和签到记录也会一起删除。`);
             if (!firstConfirm) {
                 return false;
             }
 
-            return confirm(`请再次确认：删除课程“${courseName}”是无法挽回的操作，确定继续吗？`);
+            return confirm(`请再次确认：删除课程"${courseName}"是无法挽回的操作，确定继续吗？`);
         }
     </script>
 </body>

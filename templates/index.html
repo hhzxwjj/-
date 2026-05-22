@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>首页 - 墨香书院</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css', v=2) }}">
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </head>
 <body>
@@ -35,56 +35,83 @@
         </div>
     </div>
 
-    <div class="container">
-        <h1>功能导航</h1>
-
-        <div class="dashboard-grid">
-            <!-- 报名系统 -->
-            <div class="dashboard-card">
-                <div class="dashboard-card-icon">📚</div>
-                <h3>课程报名</h3>
-                <p>浏览书法课程体系，选择适合您或孩子的课程时段，完成在线报名与缴费。</p>
+    <div class="page-section feature-section">
+        <!-- 课程报名 -->
+        <div class="feature-row">
+            <div class="feature-image">
+                <img src="{{ url_for('static', filename='images/31ede07d05cf4e0e55355ab1852071d4.jpg') }}" alt="课程报名">
+            </div>
+            <div class="feature-content">
+                <span class="feature-label">功能一</span>
+                <h2>课程报名</h2>
+                <p>浏览书法课程体系，选择适合您或孩子的课程时段，完成在线报名与缴费。从硬笔规范到毛笔创作，从零基础到进阶临帖，课程围绕真实学习目标设计。</p>
                 <a href="{{ url_for('courses') }}"><button>立即报名</button></a>
             </div>
+        </div>
 
-            <!-- 签到系统 -->
-            <div class="dashboard-card">
-                <div class="dashboard-card-icon">✅</div>
-                <h3>考勤签到</h3>
-                <p>查看个人出勤记录与课时进度。管理员可在此进行课堂点名与签到管理。</p>
+        <!-- 考勤签到 -->
+        <div class="feature-row reverse">
+            <div class="feature-image">
+                <img src="{{ url_for('static', filename='images/prod-2.f5965dc.png') }}" alt="考勤签到">
+            </div>
+            <div class="feature-content">
+                <span class="feature-label">功能二</span>
+                <h2>考勤签到</h2>
+                <p>查看个人出勤记录与课时进度。管理员可在此进行课堂点名与签到管理，实时掌握每位学员的上课情况。</p>
                 {% if session['role'] == 'admin' %}
                 <a href="{{ url_for('admin') }}"><button>管理签到</button></a>
                 {% else %}
                 <a href="{{ url_for('user_center') }}"><button>查看考勤</button></a>
                 {% endif %}
             </div>
+        </div>
 
-            <!-- 消息中心 -->
-            <div class="dashboard-card">
-                <div class="dashboard-card-icon">💬</div>
-                <h3>消息沟通</h3>
-                <p>与管理员实时沟通，咨询课程问题、申请调课或反馈学习情况。</p>
+        <!-- 消息沟通 -->
+        <div class="feature-row">
+            <div class="feature-image">
+                <img src="{{ url_for('static', filename='images/1682303986990071409.jpg') }}" alt="消息沟通">
+            </div>
+            <div class="feature-content">
+                <span class="feature-label">功能三</span>
+                <h2>消息沟通</h2>
+                <p>与管理员实时沟通，咨询课程问题、申请调课或反馈学习情况。在线消息系统让家校沟通更便捷高效。</p>
                 <a href="{{ url_for('messages') }}"><button>查看消息</button></a>
             </div>
+        </div>
 
-            <!-- 用户中心 -->
-            <div class="dashboard-card">
-                <div class="dashboard-card-icon">👤</div>
-                <h3>个人中心</h3>
-                <p>管理个人信息、修改密码、查看报名记录与课程安排。</p>
+        <!-- 个人中心 -->
+        <div class="feature-row reverse">
+            <div class="feature-image">
+                <img src="{{ url_for('static', filename='images/prod-4.522db86.png') }}" alt="个人中心">
+            </div>
+            <div class="feature-content">
+                <span class="feature-label">功能四</span>
+                <h2>个人中心</h2>
+                <p>管理个人信息、修改密码、查看报名记录与课程安排。一站式管理您和孩子的书法学习档案。</p>
                 <a href="{{ url_for('user_center') }}"><button>进入中心</button></a>
             </div>
+        </div>
 
-            <!-- 管理员专属 -->
-            {% if session['role'] == 'admin' %}
-            <div class="dashboard-card admin-card">
-                <div class="dashboard-card-icon">⚙️</div>
-                <h3>管理员后台</h3>
-                <p>课程管理、学员管理、课时统计、签到记录查看等高级功能。</p>
+        <!-- 管理员后台 -->
+        {% if session['role'] == 'admin' %}
+        <div class="feature-row">
+            <div class="feature-image">
+                <img src="{{ url_for('static', filename='images/prod-5.a09ae9c.png') }}" alt="管理员后台">
+            </div>
+            <div class="feature-content">
+                <span class="feature-label">管理员</span>
+                <h2>管理员后台</h2>
+                <p>课程管理、学员管理、课时统计、签到记录查看等高级功能。为管理员提供完整的数据管理工具。</p>
                 <a href="{{ url_for('admin') }}"><button>进入后台</button></a>
             </div>
-            {% endif %}
         </div>
+        {% endif %}
     </div>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <p>墨香书院 · 书法课程报名签到系统</p>
+        </div>
+    </footer>
 </body>
 </html>

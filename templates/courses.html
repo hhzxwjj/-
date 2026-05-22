@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>课程列表 - 书法课报名签到系统</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css', v=2) }}">
 </head>
 <body>
     <div class="header">
@@ -25,26 +25,47 @@
             </div>
         </div>
     </div>
+
+    <div class="page-hero">
+        <div class="page-hero-content">
+            <h1>课程列表</h1>
+            <p>浏览书法课程体系，选择适合的课程报名</p>
+        </div>
+    </div>
+
     <div class="container">
-        <h1>课程列表</h1>
+        {% set course_images = [
+            'images/1610606498634147.jpg',
+            'images/1682303986990071409.jpg',
+            'images/31ede07d05cf4e0e55355ab1852071d4.jpg',
+            'images/491b4611fc074f62bc32fb2611a25316.jpeg',
+            'images/672fabd9a932452aaa4899fc582c03bc.jpeg',
+            'images/8e077ebe6fd3444ab2150dc1d14b3daa.jpeg',
+            'images/prod-2.f5965dc.png',
+            'images/prod-4.522db86.png',
+            'images/prod-5.a09ae9c.png',
+            'images/prod-6.739331a.png'
+        ] %}
+
         {% if courses %}
-        <div class="stagger-in">
+        <div class="course-grid">
         {% for course in courses %}
-        <div class="course-card">
-            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
-                <div style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, rgba(139,0,0,0.1), rgba(160,82,45,0.1)); display: flex; align-items: center; justify-content: center; font-size: 24px;">📚</div>
-                <h3 style="margin: 0; border: none; background: none; padding: 0;">{{ course['name'] }}</h3>
+        <div class="course-card-promo">
+            <div class="course-card-image">
+                <img src="{{ url_for('static', filename=course_images[loop.index0 % course_images|length]) }}" alt="{{ course['name'] }}">
             </div>
-            <div class="course-info">
-                <div class="course-info-item">📖 总课时：{{ course['total_hours'] }}小时</div>
-                <div class="course-info-item">💰 价格：{{ course['price'] }}元</div>
-                <div class="course-info-item">📅 开始：{{ course['start_time'] }}</div>
-                <div class="course-info-item">🏁 结束：{{ course['end_time'] }}</div>
-                <div class="course-info-item">👥 名额：{{ course['max_students'] - course['current_students'] }}/{{ course['max_students'] }}</div>
-            </div>
-            <div class="course-description">{{ course['description'] }}</div>
-            <div class="course-action">
-                <a href="{{ url_for('course_detail', course_id=course['id']) }}"><button>查看详情</button></a>
+            <div class="course-card-body">
+                <h3>{{ course['name'] }}</h3>
+                <div class="course-meta">
+                    <span>{{ course['total_hours'] }}课时</span>
+                    <span>{{ course['price'] }}元</span>
+                    <span>名额 {{ course['max_students'] - course['current_students'] }}/{{ course['max_students'] }}</span>
+                </div>
+                <p class="course-desc">{{ course['description'] }}</p>
+                <div class="course-card-footer">
+                    <span class="course-date">{{ course['start_time'][:10] }} 开课</span>
+                    <a href="{{ url_for('course_detail', course_id=course['id']) }}"><button>查看详情</button></a>
+                </div>
             </div>
         </div>
         {% endfor %}

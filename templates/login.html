@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>登录 - 书法课报名签到系统</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css', v=2) }}">
 </head>
 <body>
     <div class="header">
@@ -18,17 +18,17 @@
             </div>
         </div>
     </div>
-    <div class="container" style="max-width: 520px;">
+    <div class="login-container">
         <h1>欢迎回来</h1>
-        <div class="form-container" style="padding: 35px;">
+        <div class="form-container">
             {% if error %}
             <div class="error-message" style="animation: shake 0.4s ease;">{{ error }}</div>
             {% endif %}
             
             <!-- 登录方式切换 -->
-            <div class="login-mode-toggle" style="display: flex; justify-content: center; margin-bottom: 30px; background: rgba(139,0,0,0.04); border-radius: 12px; padding: 4px; border: none;">
-                <button id="password-login-btn" class="tab-btn {% if mode != 'code' %}active{% endif %}" onclick="switchLoginMode('password')" style="flex:1; border-radius: 10px; border: none; background: transparent; color: var(--c-text-muted); font-size: 15px; padding: 12px;">密码登录</button>
-                <button id="code-login-btn" class="tab-btn {% if mode == 'code' %}active{% endif %}" onclick="switchLoginMode('code')" style="flex:1; border-radius: 10px; border: none; background: transparent; color: var(--c-text-muted); font-size: 15px; padding: 12px;">验证码登录</button>
+            <div class="login-mode-toggle">
+                <button id="password-login-btn" class="tab-btn {% if mode != 'code' %}active{% endif %}" onclick="switchLoginMode('password')">密码登录</button>
+                <button id="code-login-btn" class="tab-btn {% if mode == 'code' %}active{% endif %}" onclick="switchLoginMode('code')">验证码登录</button>
             </div>
             
             <!-- 密码登录表单 -->
@@ -46,7 +46,7 @@
                 </div>
                 <div class="form-group">
                     <label for="captcha">验证码</label>
-                    <div style="display: flex; gap: 10px;">
+                    <div class="captcha-container">
                         <input type="text" id="captcha" name="captcha" required>
                         <img id="captcha-image" class="captcha-image" src="" alt="验证码" onclick="refreshCaptcha()">
                     </div>

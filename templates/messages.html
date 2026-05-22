@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>消息中心 - 书法课报名签到系统</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css', v=2) }}">
 </head>
 <body>
     <div class="header">
@@ -25,8 +25,14 @@
             </div>
         </div>
     </div>
+    <div class="page-hero">
+        <div class="page-hero-content">
+            <h1>消息中心</h1>
+            <p>与管理员实时沟通，咨询课程问题</p>
+        </div>
+    </div>
+
     <div class="container">
-        <h1>消息中心</h1>
         <div class="chat-container">
             <!-- 聊天侧边栏 -->
             <div class="chat-sidebar">
@@ -35,14 +41,21 @@
                 <!-- 普通用户只能与管理员聊天 -->
                 <div class="chat-user active" data-user-id="{{ admin_user['id'] if admin_user else '' }}">
                     <div class="user-name">管理员</div>
-                    <div class="last-message">点击开始聊天</div>
+                    <div class="last-message">{{ admin_user['last_message'] if admin_user and admin_user['last_message'] else '点击开始聊天' }}</div>
+                    {% if admin_user and admin_user['last_message_time'] %}
+                    <div class="last-message-time">{{ admin_user['last_message_time'][:16].replace('T', ' ') }}</div>
+                    {% endif %}
                 </div>
                 {% else %}
                 <!-- 管理员可以与所有用户聊天 -->
                 {% for user in users %}
-                <div class="chat-user" data-user-id="{{ user['id'] }}">
+                <div class="chat-user {{ 'pinned' if user['pinned_at'] else '' }}" data-user-id="{{ user['id'] }}">
                     <div class="user-name">{{ user['name'] }}</div>
-                    <div class="last-message">点击开始聊天</div>
+                    <div class="pin-btn {{ 'pinned' if user['pinned_at'] else '' }}" data-user-id="{{ user['id'] }}" title="{{ '取消置顶' if user['pinned_at'] else '置顶' }}">📌</div>
+                    <div class="last-message">{{ user['last_message'] if user['last_message'] else '点击开始聊天' }}</div>
+                    {% if user['last_message_time'] %}
+                    <div class="last-message-time">{{ user['last_message_time'][:16].replace('T', ' ') }}</div>
+                    {% endif %}
                 </div>
                 {% endfor %}
                 {% endif %}
@@ -70,76 +83,150 @@
         // 聊天功能
         document.addEventListener('DOMContentLoaded', function() {
             const CURRENT_USER_ID = {{ session['user_id'] }};
+            const IS_ADMIN = {{ 'true' if session.get('role') == 'admin' else 'false' }};
             const chatForm = document.getElementById('chat-form');
             const chatMessages = document.getElementById('chat-messages');
             const receiverId = document.getElementById('receiver_id');
             const chatTitle = document.getElementById('chat-title');
-            const chatUsers = document.querySelectorAll('.chat-user');
+            const sidebar = document.querySelector('.chat-sidebar');
             
-            // 选择联系人
-            chatUsers.forEach(user => {
-                user.addEventListener('click', function() {
-                    // 移除所有active类
-                    chatUsers.forEach(u => u.classList.remove('active'));
-                    // 添加active类到当前用户
-                    this.classList.add('active');
-                    // 设置接收人ID
-                    const userId = this.getAttribute('data-user-id');
-                    receiverId.value = userId;
-                    // 更新聊天标题
-                    const userName = this.querySelector('.user-name').textContent;
-                    chatTitle.textContent = userName;
-                    // 加载聊天记录
-                    loadChatHistory(userId);
+            // 绑定联系人点击事件
+            function bindContactEvents() {
+                const chatUsers = document.querySelectorAll('.chat-user');
+                chatUsers.forEach(user => {
+                    user.addEventListener('click', function(e) {
+                        // 如果点击的是置顶按钮，不触发选择
+                        if (e.target.closest('.pin-btn')) return;
+                        
+                        // 移除所有active类
+                        chatUsers.forEach(u => u.classList.remove('active'));
+                        // 添加active类到当前用户
+                        this.classList.add('active');
+                        // 设置接收人ID
+                        const userId = this.getAttribute('data-user-id');
+                        receiverId.value = userId;
+                        // 更新聊天标题
+                        const userName = this.querySelector('.user-name').textContent;
+                        chatTitle.textContent = userName;
+                        // 加载聊天记录
+                        loadChatHistory(userId);
+                    });
                 });
-            });
+                
+                // 绑定置顶按钮
+                document.querySelectorAll('.pin-btn').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const userId = this.getAttribute('data-user-id');
+                        togglePin(userId);
+                    });
+                });
+            }
+            
+            bindContactEvents();
             
             // 加载聊天记录
             function loadChatHistory(userId) {
-                // 清空消息容器
-                chatMessages.innerHTML = '';
-
                 if (!userId) return;
 
-                fetch(`/api/conversation/${userId}`)
+                fetch(`/api/conversation/${userId}`, { credentials: 'same-origin' })
                 .then(res => res.json())
                 .then(data => {
                     if (!data.success) {
-                        const messageDiv = document.createElement('div');
-                        messageDiv.className = 'message received';
-                        messageDiv.innerHTML = `
-                            <div class="message-content">${data.message || '加载会话失败'}</div>
-                            <div class="message-time"></div>
-                        `;
-                        chatMessages.appendChild(messageDiv);
+                        // 只在首次加载时清空并显示错误，轮询时不覆盖已有消息
+                        if (chatMessages.children.length === 0) {
+                            chatMessages.innerHTML = `
+                                <div class="message received">
+                                    <div class="message-content">${data.message || '加载会话失败'}</div>
+                                    <div class="message-time"></div>
+                                </div>
+                            `;
+                        }
                         return;
                     }
 
-                    (data.messages || []).forEach(msg => {
-                        const isSent = Number(msg.sender_id) === Number(CURRENT_USER_ID);
-                        const messageDiv = document.createElement('div');
-                        messageDiv.className = `message ${isSent ? 'sent' : 'received'}`;
-                        const timeText = (msg.created_at || '').replace('T', ' ').slice(0, 19);
-                        messageDiv.innerHTML = `
-                            <div class="message-content"></div>
-                            <div class="message-time">${timeText}</div>
-                        `;
-                        messageDiv.querySelector('.message-content').textContent = msg.content || '';
-                        chatMessages.appendChild(messageDiv);
-                    });
-
-                    // 滚动到底部
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                    // 对比现有消息数量，如果有变化才重渲染
+                    const existingCount = chatMessages.querySelectorAll('.message').length;
+                    const newMessages = data.messages || [];
+                    if (existingCount !== newMessages.length) {
+                        chatMessages.innerHTML = '';
+                        newMessages.forEach(msg => {
+                            const isSent = Number(msg.sender_id) === Number(CURRENT_USER_ID);
+                            const messageDiv = document.createElement('div');
+                            messageDiv.className = `message ${isSent ? 'sent' : 'received'}`;
+                            const timeText = (msg.created_at || '').replace('T', ' ').slice(0, 19);
+                            messageDiv.innerHTML = `
+                                <div class="message-content"></div>
+                                <div class="message-time">${timeText}</div>
+                            `;
+                            messageDiv.querySelector('.message-content').textContent = msg.content || '';
+                            chatMessages.appendChild(messageDiv);
+                        });
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    }
                 })
                 .catch(() => {
-                    const messageDiv = document.createElement('div');
-                    messageDiv.className = 'message received';
-                    messageDiv.innerHTML = `
-                        <div class="message-content">加载会话失败，请重试</div>
-                        <div class="message-time"></div>
-                    `;
-                    chatMessages.appendChild(messageDiv);
+                    if (chatMessages.children.length === 0) {
+                        chatMessages.innerHTML = `
+                            <div class="message received">
+                                <div class="message-content">加载会话失败，请重试</div>
+                                <div class="message-time"></div>
+                            </div>
+                        `;
+                    }
                 });
+            }
+            
+            // 加载并渲染联系人列表（仅管理员）
+            function loadContacts() {
+                if (!IS_ADMIN) return;
+                
+                fetch('/api/contacts', { credentials: 'same-origin' })
+                .then(res => res.json())
+                .then(data => {
+                    if (!data.success) return;
+                    renderContacts(data.contacts);
+                })
+                .catch(err => console.error('加载联系人失败:', err));
+            }
+            
+            // 渲染联系人列表
+            function renderContacts(contacts) {
+                const activeId = receiverId.value;
+                // 保留标题
+                const title = sidebar.querySelector('h2');
+                sidebar.innerHTML = '';
+                sidebar.appendChild(title);
+                
+                contacts.forEach(contact => {
+                    const div = document.createElement('div');
+                    div.className = 'chat-user' + (contact.pinned ? ' pinned' : '') + (String(contact.id) === String(activeId) ? ' active' : '');
+                    div.setAttribute('data-user-id', contact.id);
+                    div.innerHTML = `
+                        <div class="user-name">${contact.name}</div>
+                        <div class="pin-btn ${contact.pinned ? 'pinned' : ''}" data-user-id="${contact.id}" title="${contact.pinned ? '取消置顶' : '置顶'}">📌</div>
+                        <div class="last-message">${contact.last_message || '点击开始聊天'}</div>
+                        ${contact.last_message_time ? `<div class="last-message-time">${contact.last_message_time.slice(0, 16).replace('T', ' ')}</div>` : ''}
+                    `;
+                    sidebar.appendChild(div);
+                });
+                
+                bindContactEvents();
+            }
+            
+            // 置顶/取消置顶
+            function togglePin(userId) {
+                fetch(`/api/toggle_pin/${userId}`, {
+                    method: 'POST',
+                    credentials: 'same-origin'
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        loadContacts();
+                    }
+                })
+                .catch(err => console.error('置顶操作失败:', err));
             }
             
             // 显示提示气泡
@@ -194,6 +281,7 @@
                 // 发送消息
                 fetch('{{ url_for('send_message') }}', {
                     method: 'POST',
+                    credentials: 'same-origin',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
                     },
@@ -206,6 +294,8 @@
                     if (data.success) {
                         showToast('发送成功', 'success');
                         loadChatHistory(receiver);
+                        // 刷新联系人排序（把当前聊天对象置顶）
+                        if (IS_ADMIN) loadContacts();
                     } else {
                         showToast(data.message || '发送失败', 'error');
                     }
@@ -218,12 +308,14 @@
                 });
             });
             
-            // 自动刷新消息（每5秒轮询）
+            // 自动刷新（每5秒轮询）
             setInterval(() => {
                 const receiver = receiverId.value;
                 if (receiver) {
                     loadChatHistory(receiver);
                 }
+                // 同时刷新联系人列表，接收新消息时自动排序
+                if (IS_ADMIN) loadContacts();
             }, 5000);
             
             // 初始加载

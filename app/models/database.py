@@ -157,6 +157,19 @@ def init_db():
     )
     ''')
     
+    # 创建聊天置顶表
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS chat_pins (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        pinned_user_id INTEGER NOT NULL,
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(user_id, pinned_user_id),
+        FOREIGN KEY (user_id) REFERENCES users (id),
+        FOREIGN KEY (pinned_user_id) REFERENCES users (id)
+    )
+    ''')
+    
     conn.commit()
     conn.close()
 

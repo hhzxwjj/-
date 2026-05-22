@@ -83,3 +83,15 @@ CREATE TABLE IF NOT EXISTS messages (
     INDEX idx_sender_id (sender_id),
     INDEX idx_receiver_id (receiver_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='消息表';
+
+-- 聊天置顶表
+CREATE TABLE IF NOT EXISTS chat_pins (
+    id INT AUTO_INCREMENT PRIMARY KEY COMMENT '主键',
+    user_id INT NOT NULL COMMENT '操作用户ID',
+    pinned_user_id INT NOT NULL COMMENT '被置顶用户ID',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '置顶时间',
+    UNIQUE(user_id, pinned_user_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (pinned_user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    INDEX idx_user_id (user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='聊天置顶表';

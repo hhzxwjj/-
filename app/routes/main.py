@@ -1008,13 +1008,39 @@ def messages():
         return redirect(url_for('login'))
     
     conn = get_db_connection()
-    # 如果是管理员，获取所有用户列表；普通用户只显示管理员为联系人
+    current_user_id = session['user_id']
+    # 如果是管理员，获取所有用户列表并按置顶+最新消息时间排序；普通用户只显示管理员为联系人
     users = []
     admin_user = None
     if session.get('role') == 'admin':
-        users = conn.execute('SELECT id, name FROM users WHERE role = ? ORDER BY id DESC', ('user',)).fetchall()
+        users = conn.execute('''
+            SELECT u.id, u.name,
+                (SELECT MAX(created_at) FROM messages
+                 WHERE (sender_id = u.id AND receiver_id = ?)
+                    OR (sender_id = ? AND receiver_id = u.id)) as last_message_time,
+                (SELECT content FROM messages
+                 WHERE (sender_id = u.id AND receiver_id = ?)
+                    OR (sender_id = ? AND receiver_id = u.id)
+                 ORDER BY created_at DESC LIMIT 1) as last_message,
+                cp.created_at as pinned_at
+            FROM users u
+            LEFT JOIN chat_pins cp ON cp.user_id = ? AND cp.pinned_user_id = u.id
+            WHERE u.role = ?
+            ORDER BY (cp.created_at IS NOT NULL) DESC, cp.created_at DESC, last_message_time DESC
+        ''', (current_user_id, current_user_id, current_user_id, current_user_id, current_user_id, 'user')).fetchall()
     else:
         admin_user = get_admin_user(conn)
+        if admin_user:
+            last_msg = conn.execute('''
+                SELECT content, created_at FROM messages
+                WHERE (sender_id = ? AND receiver_id = ?)
+                   OR (sender_id = ? AND receiver_id = ?)
+                ORDER BY created_at DESC LIMIT 1
+            ''', (current_user_id, admin_user['id'], admin_user['id'], current_user_id)).fetchone()
+            admin_user = dict(admin_user)
+            if last_msg:
+                admin_user['last_message'] = last_msg['content']
+                admin_user['last_message_time'] = last_msg['created_at']
     conn.close()
     
     return render_template('messages.html', users=users, admin_user=admin_user)
@@ -1094,6 +1120,80 @@ def send_message():
     conn.close()
     
     return jsonify({'success': True, 'message': '消息发送成功'})
+
+
+@app.route('/api/contacts')
+def api_contacts():
+    """获取当前用户的联系人列表（仅管理员使用），按置顶+最新消息时间排序。"""
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'message': '请先登录'}), 401
+    
+    current_user_id = session['user_id']
+    if session.get('role') != 'admin':
+        return jsonify({'success': False, 'message': '无权限'}), 403
+    
+    conn = get_db_connection()
+    users = conn.execute('''
+        SELECT u.id, u.name,
+            (SELECT MAX(created_at) FROM messages
+             WHERE (sender_id = u.id AND receiver_id = ?)
+                OR (sender_id = ? AND receiver_id = u.id)) as last_message_time,
+            (SELECT content FROM messages
+             WHERE (sender_id = u.id AND receiver_id = ?)
+                OR (sender_id = ? AND receiver_id = u.id)
+             ORDER BY created_at DESC LIMIT 1) as last_message,
+            cp.created_at as pinned_at
+        FROM users u
+        LEFT JOIN chat_pins cp ON cp.user_id = ? AND cp.pinned_user_id = u.id
+        WHERE u.role = ?
+        ORDER BY (cp.created_at IS NOT NULL) DESC, cp.created_at DESC, last_message_time DESC
+    ''', (current_user_id, current_user_id, current_user_id, current_user_id, current_user_id, 'user')).fetchall()
+    conn.close()
+    
+    result = []
+    for u in users:
+        result.append({
+            'id': u['id'],
+            'name': u['name'],
+            'last_message': u['last_message'] or '',
+            'last_message_time': u['last_message_time'] or '',
+            'pinned': bool(u['pinned_at'])
+        })
+    return jsonify({'success': True, 'contacts': result})
+
+
+@app.route('/api/toggle_pin/<int:other_user_id>', methods=['POST'])
+def api_toggle_pin(other_user_id):
+    """置顶或取消置顶某个联系人。"""
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'message': '请先登录'}), 401
+    
+    current_user_id = session['user_id']
+    conn = get_db_connection()
+    
+    # 检查是否已经置顶
+    existing = conn.execute(
+        'SELECT id FROM chat_pins WHERE user_id = ? AND pinned_user_id = ?',
+        (current_user_id, other_user_id)
+    ).fetchone()
+    
+    if existing:
+        conn.execute(
+            'DELETE FROM chat_pins WHERE user_id = ? AND pinned_user_id = ?',
+            (current_user_id, other_user_id)
+        )
+        pinned = False
+    else:
+        conn.execute(
+            'INSERT INTO chat_pins (user_id, pinned_user_id) VALUES (?, ?)',
+            (current_user_id, other_user_id)
+        )
+        pinned = True
+    
+    conn.commit()
+    conn.close()
+    return jsonify({'success': True, 'pinned': pinned})
+
 
 # 路由：修改密码
 @app.route('/change_password', methods=['POST'])
