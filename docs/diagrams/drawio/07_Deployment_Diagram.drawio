@@ -1,0 +1,67 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.5.2 Chrome/142.0.7444.265 Electron/39.6.1 Safari/537.36" version="29.5.2">
+  <diagram name="07_Deployment_Diagram" id="diagram-1">
+    <mxGraphModel dx="2640" dy="1027" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="650" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="n_client" parent="1" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;darkOpacity=0.05;darkOpacity2=0.1;fillColor=#E1F5FE;strokeColor=#01579B;fontColor=#333333;fontSize=12;" value="&lt;&lt;device&gt;&gt;&#xa;Client Device&#xa;(PC / Mobile / Tablet)" vertex="1">
+          <mxGeometry height="170" width="290" x="-20" y="10" as="geometry" />
+        </mxCell>
+        <mxCell id="a_browser" parent="1" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fillColor=#BBDEFB;strokeColor=#1565C0;fontColor=#333333;fontSize=11;" value="&lt;&lt;artifact&gt;&gt;&#xa;Chrome / Safari / Edge" vertex="1">
+          <mxGeometry height="40" width="140" x="80" y="140" as="geometry" />
+        </mxCell>
+        <mxCell id="n_web" parent="1" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;darkOpacity=0.05;darkOpacity2=0.1;fillColor=#FFF3E0;strokeColor=#E65100;fontColor=#333333;fontSize=12;" value="&lt;&lt;device&gt;&gt;&#xa;Web Server&#xa;(Linux / Cloud)" vertex="1">
+          <mxGeometry height="160" width="220" x="360" y="10" as="geometry" />
+        </mxCell>
+        <mxCell id="a_nginx" parent="1" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fillColor=#FFE0B2;strokeColor=#E65100;fontColor=#333333;fontSize=11;" value="&lt;&lt;artifact&gt;&gt;&#xa;Nginx 1.18+" vertex="1">
+          <mxGeometry height="40" width="160" x="410" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="a_ssl" parent="1" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fillColor=#FFE0B2;strokeColor=#E65100;fontColor=#333333;fontSize=11;" value="&lt;&lt;artifact&gt;&gt;&#xa;SSL/TLS Certificate" vertex="1">
+          <mxGeometry height="30" width="160" x="400" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="n_app" parent="1" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;darkOpacity=0.05;darkOpacity2=0.1;fillColor=#E8F5E9;strokeColor=#2E7D32;fontColor=#333333;fontSize=12;" value="&lt;&lt;device&gt;&gt;&#xa;Application Server&#xa;(Linux / Docker)" vertex="1">
+          <mxGeometry height="260" width="260" x="730" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="a_gunicorn" parent="1" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fillColor=#C8E6C9;strokeColor=#2E7D32;fontColor=#333333;fontSize=11;" value="&lt;&lt;artifact&gt;&gt;&#xa;Gunicorn (WSGI)" vertex="1">
+          <mxGeometry height="40" width="200" x="770" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="a_flask" parent="1" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fillColor=#C8E6C9;strokeColor=#2E7D32;fontColor=#333333;fontSize=11;" value="&lt;&lt;artifact&gt;&gt;&#xa;Flask Application" vertex="1">
+          <mxGeometry height="50" width="200" x="770" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="a_socketio" parent="1" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fillColor=#C8E6C9;strokeColor=#2E7D32;fontColor=#333333;fontSize=11;" value="&lt;&lt;artifact&gt;&gt;&#xa;Flask-SocketIO" vertex="1">
+          <mxGeometry height="40" width="200" x="770" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="n_sqlite" parent="1" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;darkOpacity=0.05;darkOpacity2=0.1;fillColor=#F3E5F5;strokeColor=#7B1FA2;fontColor=#333333;fontSize=12;" value="&lt;&lt;device&gt;&gt;&#xa;File System&#xa;(Development)" vertex="1">
+          <mxGeometry height="175" width="300" x="280" y="238" as="geometry" />
+        </mxCell>
+        <mxCell id="a_dbfile" parent="1" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fillColor=#E1BEE7;strokeColor=#7B1FA2;fontColor=#333333;fontSize=11;" value="&lt;&lt;artifact&gt;&gt;&#xa;calligraphy_system.db" vertex="1">
+          <mxGeometry height="40" width="140" x="380" y="270" as="geometry" />
+        </mxCell>
+        <mxCell id="n_mysql" parent="1" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;darkOpacity=0.05;darkOpacity2=0.1;fillColor=#F3E5F5;strokeColor=#7B1FA2;fontColor=#333333;fontSize=12;" value="&lt;&lt;device&gt;&gt;&#xa;Database Server&#xa;(Production)" vertex="1">
+          <mxGeometry height="160" width="290" x="715" y="330" as="geometry" />
+        </mxCell>
+        <mxCell id="a_mysql" parent="1" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fillColor=#E1BEE7;strokeColor=#7B1FA2;fontColor=#333333;fontSize=11;" value="&lt;&lt;artifact&gt;&gt;&#xa;MySQL 8.0" vertex="1">
+          <mxGeometry height="40" width="180" x="790" y="450" as="geometry" />
+        </mxCell>
+        <mxCell id="p1" edge="1" parent="1" source="n_client" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;" target="n_web" value="HTTPS (443)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="p2" edge="1" parent="1" source="n_web" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;" target="n_app" value="Unix Socket / TCP">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="p3" edge="1" parent="1" source="n_app" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;" target="n_sqlite" value="file I/O">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="p4" edge="1" parent="1" source="n_app" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;" target="n_mysql" value="TCP (3306)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="spec1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFDE7;strokeColor=#F9A825;fontColor=#333333;fontSize=12;" value="&lt;&lt;deployment spec&gt;&gt;&#xa;Development:&#xa;- SQLite single file&#xa;- Flask dev server&#xa;- Debug mode ON" vertex="1">
+          <mxGeometry height="100" width="260" x="-5" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="spec2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFDE7;strokeColor=#F9A825;fontColor=#333333;fontSize=12;" value="&lt;&lt;deployment spec&gt;&gt;&#xa;Production:&#xa;- MySQL 8.0&#xa;- Nginx + Gunicorn&#xa;- 4 Workers&#xa;- SSL/TLS enabled" vertex="1">
+          <mxGeometry height="100" width="260" y="340" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

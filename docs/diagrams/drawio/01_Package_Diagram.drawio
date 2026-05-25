@@ -1,0 +1,124 @@
+<mxfile host="app.diagrams.net" modified="2026-05-22T08:00:00.000Z" agent="Mozilla/5.0" etag="abc123" version="24.0.0" type="device">
+  <diagram name="01_Package_Diagram" id="diagram-1">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="700" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="bg1" value="templates" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E1F5FE;strokeColor=#01579B;fontColor=#333333;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="220" height="330" as="geometry" />
+        </mxCell>
+        <mxCell id="t0" value="landing.html" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1F5FE;strokeColor=#01579B;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="50" y="70" width="200" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="t1" value="index.html" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1F5FE;strokeColor=#01579B;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="50" y="112" width="200" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="t2" value="courses.html" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1F5FE;strokeColor=#01579B;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="50" y="154" width="200" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="t3" value="messages.html" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1F5FE;strokeColor=#01579B;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="50" y="196" width="200" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="t4" value="login.html / register.html" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1F5FE;strokeColor=#01579B;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="50" y="238" width="200" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="t5" value="admin.html / hours..." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1F5FE;strokeColor=#01579B;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="50" y="280" width="200" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="t6" value="attendance.html" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1F5FE;strokeColor=#01579B;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="50" y="322" width="200" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="t7" value="complete_profile.html" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1F5FE;strokeColor=#01579B;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="50" y="364" width="200" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="bg2" value="static" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#E65100;fontColor=#333333;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="40" y="400" width="220" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="s0" value="style.css" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#E65100;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="50" y="430" width="200" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="s1" value="script.js" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#E65100;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="50" y="472" width="200" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="s2" value="images" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#E65100;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="50" y="514" width="200" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="bg3" value="app.routes" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#2E7D32;fontColor=#333333;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="300" y="40" width="220" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="r0" value="main.py" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#2E7D32;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="310" y="70" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bg4" value="app.models" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#2E7D32;fontColor=#333333;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="300" y="140" width="220" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="r1" value="database.py" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#2E7D32;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="310" y="170" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bg5" value="app.services" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#2E7D32;fontColor=#333333;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="300" y="240" width="220" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="r2" value="business_logic.py" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#2E7D32;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="310" y="270" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bg6" value="app.utils" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#2E7D32;fontColor=#333333;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="300" y="340" width="220" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="r3" value="helpers.py" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#2E7D32;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="310" y="370" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bg7" value="Data Layer" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F3E5F5;strokeColor=#7B1FA2;fontColor=#333333;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="560" y="40" width="260" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="db1" value="SQLite&#xa;calligraphy_system.db" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#F3E5F5;strokeColor=#7B1FA2;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="580" y="70" width="220" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="db2" value="MySQL&#xa;calligraphy_system" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#F3E5F5;strokeColor=#7B1FA2;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="580" y="150" width="220" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="bg8" value="External" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFEBEE;strokeColor=#C62828;fontColor=#333333;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="860" y="40" width="220" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="ex1" value="Browser" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFEBEE;strokeColor=#C62828;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="870" y="70" width="90" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ex2" value="Nginx" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFEBEE;strokeColor=#C62828;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="870" y="120" width="90" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ex3" value="Gunicorn" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFEBEE;strokeColor=#C62828;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="980" y="120" width="90" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ex4" value="DatabaseConnection" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFEBEE;strokeColor=#C62828;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="870" y="180" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" value="render_template" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="bg1" target="bg3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" value="static files" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="bg2" target="bg1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" value="get_db_connection" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="bg3" target="bg4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" value="business logic" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="bg3" target="bg5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" value="helpers" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="bg3" target="bg6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" value="context manager" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="bg4" target="bg7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" value="HTTP" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="ex1" target="ex2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" value="reverse proxy" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="ex2" target="ex3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" value="WSGI" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="ex3" target="bg3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

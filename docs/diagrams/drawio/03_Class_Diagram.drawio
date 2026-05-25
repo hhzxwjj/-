@@ -1,0 +1,106 @@
+<mxfile host="app.diagrams.net" modified="2026-05-22T08:00:00.000Z" agent="Mozilla/5.0" etag="abc123" version="24.0.0" type="device">
+  <diagram name="03_Class_Diagram" id="diagram-1">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1300" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="bg_ent" value="Entity" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E1F5FE;strokeColor=#01579B;fontColor=#333333;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="900" height="720" as="geometry" />
+        </mxCell>
+        <mxCell id="u" value="User&#xa;───────────────&#xa;id: INTEGER PK&#xa;username: TEXT UK NN&#xa;password_hash: TEXT NN&#xa;role: TEXT&#xa;name: TEXT&#xa;phone: TEXT&#xa;email: TEXT&#xa;child_name: TEXT&#xa;created_at: DATETIME" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1F5FE;strokeColor=#01579B;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="70" width="260" height="260" as="geometry" />
+        </mxCell>
+        <mxCell id="co" value="Course&#xa;───────────────&#xa;id: INTEGER PK&#xa;name: TEXT NN&#xa;description: TEXT&#xa;total_hours: INTEGER&#xa;price: REAL&#xa;start_time: TEXT&#xa;end_time: TEXT&#xa;max_students: INTEGER&#xa;current_students: INTEGER" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1F5FE;strokeColor=#01579B;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="350" width="260" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="en" value="Enrollment&#xa;───────────────&#xa;id: INTEGER PK&#xa;user_id: INTEGER FK&#xa;course_id: INTEGER FK&#xa;status: TEXT&#xa;payment_amount: REAL&#xa;payment_time: TEXT&#xa;attendance_count: INTEGER" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1F5FE;strokeColor=#01579B;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="360" y="70" width="260" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="at" value="Attendance&#xa;───────────────&#xa;id: INTEGER PK&#xa;enrollment_id: INTEGER FK&#xa;class_date: TEXT&#xa;class_number: INTEGER&#xa;status: TEXT" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1F5FE;strokeColor=#01579B;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="360" y="300" width="260" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="al" value="AlternateCourse&#xa;───────────────&#xa;id: INTEGER PK&#xa;enrollment_id: INTEGER FK&#xa;course_id: INTEGER FK&#xa;status: TEXT" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1F5FE;strokeColor=#01579B;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="360" y="490" width="260" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="ms" value="Message&#xa;───────────────&#xa;id: INTEGER PK&#xa;sender_id: INTEGER FK&#xa;receiver_id: INTEGER FK&#xa;content: TEXT&#xa;created_at: TEXT&#xa;status: TEXT" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1F5FE;strokeColor=#01579B;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="660" y="70" width="260" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="cp" value="ChatPin&#xa;───────────────&#xa;id: INTEGER PK&#xa;user_id: INTEGER FK&#xa;pinned_user_id: INTEGER FK&#xa;created_at: TEXT" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1F5FE;strokeColor=#01579B;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="660" y="280" width="260" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="bg_svc" value="Service" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#2E7D32;fontColor=#333333;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="40" y="800" width="1440" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="au" value="AuthService&#xa;────────────────&#xa;+register()&#xa;+login()&#xa;+logout()&#xa;+check_profile()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#2E7D32;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="830" width="200" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="cs" value="CourseService&#xa;────────────────&#xa;+get_all_courses()&#xa;+get_course_detail()&#xa;+enroll()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#2E7D32;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="290" y="830" width="200" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="ats" value="AttendanceService&#xa;────────────────&#xa;+check_in()&#xa;+get_history()&#xa;+alternate_course()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#2E7D32;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="520" y="830" width="200" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="msg" value="MessageService&#xa;────────────────&#xa;+send_message()&#xa;+get_conversation()&#xa;+get_contacts()&#xa;+toggle_pin()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#2E7D32;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="750" y="830" width="200" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="us" value="UserService&#xa;────────────────&#xa;+get_profile()&#xa;+update_profile()&#xa;+get_hours()&#xa;+consume_hours()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#2E7D32;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="980" y="830" width="200" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="ads" value="AdminService&#xa;────────────────&#xa;+get_stats()&#xa;+manage_courses()&#xa;+manage_users()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#2E7D32;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1210" y="830" width="200" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="bg_db" value="Database" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F3E5F5;strokeColor=#7B1FA2;fontColor=#333333;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1030" width="600" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="dbc" value="DatabaseConnection&#xa;────────────────&#xa;+connect()&#xa;+close()&#xa;+execute()&#xa;+fetchall()&#xa;+fetchone()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3E5F5;strokeColor=#7B1FA2;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1060" width="240" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="idb" value="init_db&#xa;────────────────&#xa;+create_tables()&#xa;+init_admin()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3E5F5;strokeColor=#7B1FA2;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="320" y="1060" width="200" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="r1" value="1 : 0..*" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="u" target="en">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r2" value="1 : 0..*" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="co" target="en">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r3" value="1 : 0..*" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="u" target="at">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r4" value="1 : 0..*" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="co" target="at">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r5" value="1 : 0..*" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="at" target="al">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r6" value="1 : 0..*" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="co" target="al">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r7" value="1 : 0..*" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="u" target="ms">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r8" value="1 : 0..*" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="u" target="cp">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s1" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;" edge="1" parent="1" source="au" target="u">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s2" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;" edge="1" parent="1" source="cs" target="co">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s3" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;" edge="1" parent="1" source="ats" target="at">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s4" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;" edge="1" parent="1" source="msg" target="ms">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s5" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;" edge="1" parent="1" source="us" target="u">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s6" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;" edge="1" parent="1" source="ads" target="u">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -31,3 +31,18 @@ server.*.log
 # 备份文件
 *.bak
 cookie.txt
+
+# 文档生成脚本（非项目核心）
+docs/generate_*.py
+docs/diagrams/generate_*.py
+docs/diagrams/test_*.py
+generate_screenshots.py
+
+# 运行时截图证据（由用户手动生成）
+docs/images/
+
+# 忽略所有 .docx（Markdown 是源文件，Word 为交付物可本地保留）
+*.docx
+
+# drawio 备份文件
+docs/diagrams/drawio/.*.bkp

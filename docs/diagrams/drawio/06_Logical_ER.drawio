@@ -1,0 +1,55 @@
+<mxfile host="app.diagrams.net" modified="2026-05-22T08:00:00.000Z" agent="Mozilla/5.0" etag="abc123" version="24.0.0" type="device">
+  <diagram name="06_Logical_ER" id="diagram-1">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="600" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="u" value="users&#xa;────────────────────&#xa;PK id: INTEGER&#xa;UK username: TEXT NN&#xa;password_hash: TEXT NN&#xa;role: TEXT&#xa;name: TEXT&#xa;phone: TEXT&#xa;email: TEXT&#xa;child_name: TEXT" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1F5FE;strokeColor=#01579B;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="260" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="co" value="courses&#xa;────────────────────&#xa;PK id: INTEGER&#xa;name: TEXT NN&#xa;description: TEXT&#xa;total_hours: INTEGER&#xa;price: REAL&#xa;start_time: TEXT&#xa;end_time: TEXT&#xa;max_students: INTEGER&#xa;current_students: INTEGER" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1F5FE;strokeColor=#01579B;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="360" y="40" width="260" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="en" value="enrollments&#xa;────────────────────&#xa;PK id: INTEGER&#xa;FK user_id: INTEGER&#xa;FK course_id: INTEGER&#xa;status: TEXT&#xa;payment_amount: REAL&#xa;payment_time: TEXT&#xa;attendance_count: INTEGER" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#E65100;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="320" width="260" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="at" value="attendances&#xa;────────────────────&#xa;PK id: INTEGER&#xa;FK enrollment_id: INTEGER&#xa;class_date: TEXT&#xa;class_number: INTEGER&#xa;status: TEXT" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#2E7D32;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="360" y="340" width="260" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="alt" value="alternate_courses&#xa;────────────────────&#xa;PK id: INTEGER&#xa;FK enrollment_id: INTEGER&#xa;FK course_id: INTEGER&#xa;status: TEXT" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#2E7D32;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="680" y="340" width="260" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="msg" value="messages&#xa;────────────────────&#xa;PK id: INTEGER&#xa;FK sender_id: INTEGER&#xa;FK receiver_id: INTEGER&#xa;content: TEXT&#xa;created_at: TEXT&#xa;status: TEXT" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3E5F5;strokeColor=#7B1FA2;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="40" width="260" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="pin" value="chat_pins&#xa;────────────────────&#xa;PK id: INTEGER&#xa;FK user_id: INTEGER&#xa;FK pinned_user_id: INTEGER&#xa;created_at: TEXT" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3E5F5;strokeColor=#7B1FA2;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="280" width="260" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="u" target="en">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="co" target="en">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="u" target="at">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="co" target="at">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="at" target="alt">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="co" target="alt">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="u" target="msg">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="u" target="pin">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
